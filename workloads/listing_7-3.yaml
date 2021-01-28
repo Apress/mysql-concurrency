@@ -1,0 +1,37 @@
+--- # Listing 7-3. Example of an insert intention lock
+name:        Listing 7-3
+description: Example of an insert intention lock
+connections: 3
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM world.city
+       WHERE ID > 4079
+         FOR UPDATE
+    format:      vertical
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      INSERT INTO world.city
+      VALUES (4080, 'Darwin', 'AUS',
+              'Northern Territory', 146000)
+    wait:        No
+    show_result: No
+  - connection:  3
+    sql: |
+      SELECT thread_id, event_id,
+             object_schema, object_name, index_name,
+             lock_type, lock_mode, lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id IN ({thread_ids_not_self})
+             AND object_name = 'city'
+             AND index_name = 'PRIMARY'
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ROLLBACK

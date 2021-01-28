@@ -1,0 +1,11 @@
+--- # Listing 3-5. InnoDB metrics related to transactions
+name:        Listing 3-5
+description: InnoDB metrics related to transactions
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+     SELECT NAME, COUNT, STATUS, COMMENT
+             FROM information_schema.INNODB_METRICS
+       WHERE SUBSYSTEM = 'transaction'
+    format:      vertical

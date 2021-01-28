@@ -1,0 +1,54 @@
+--- # Listing 12-5. Consistent reads mixed with DML
+name:        Listing 12-5
+description: Consistent reads mixed with DML
+connections: 2
+queries:
+  - connection:  1
+    sql:         SET transaction_isolation = 'REPEATABLE-READ'
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT ID, Name, Population
+        FROM world.city
+       WHERE CountryCOde = 'BHS'
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      INSERT INTO world.city
+      VALUES (4080, 'Freeport', 'BHS',
+              'Grand Bahama', 50000)
+  - connection:  2
+    sql:         COMMIT
+  - connection:  1
+    sql: |
+      SELECT ID, Name, Population
+        FROM world.city
+       WHERE CountryCOde = 'BHS'
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population * 1.10
+       WHERE CountryCOde = 'BHS'
+  - connection:  1
+    sql: |
+      SELECT ID, Name, Population
+        FROM world.city
+       WHERE CountryCOde = 'BHS'
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         DELETE FROM world.city WHERE ID = 4080
+investigations:
+  - sql: |
+      SELECT index_name, lock_type,
+             lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND lock_type = 'RECORD'
+             AND thread_id = ?
+       ORDER BY index_name, lock_data DESC
+    parameters:  [thread_id]

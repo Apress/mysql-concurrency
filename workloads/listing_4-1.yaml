@@ -1,0 +1,86 @@
+--- # Listing 4-1. Example transactions
+name:        Listing 4-1
+description: Example transactions
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         UPDATE world.city SET Population = 5200000 WHERE ID = 130
+    wait:        No
+    show_result: No
+  - connection:  1
+    sql:         UPDATE world.city SET Population = 4900000 WHERE ID = 131
+    wait:        No
+    show_result: No
+  - connection:  1
+    sql:         UPDATE world.city SET Population = 2400000 WHERE ID = 132
+    wait:        No
+    show_result: No
+  - connection:  1
+    sql:         UPDATE world.city SET Population = 2000000 WHERE ID = 133
+    wait:        No
+    show_result: No
+  - connection:  2
+    sql:         XA START 'abc', 'def', 1
+    wait:        No
+    show_result: No
+  - connection:  2
+    sql:         UPDATE world.city SET Population = 900000 WHERE ID = 3805
+    wait:        No
+    show_result: No
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         XA END 'abc', 'def', 1
+  - connection:  2
+    sql:         XA ROLLBACK 'abc', 'def', 1
+investigations:
+  - sql: |
+      SELECT *
+        FROM performance_schema.events_transactions_current
+       WHERE state = 'ACTIVE'
+    format:      vertical
+  - sql: |
+      SELECT sql_text
+        FROM performance_schema.events_statements_history
+       WHERE thread_id = ?
+             AND event_id = ?
+    parameters:  [thread_id, event_id+1]
+    format:      vertical
+  - sql: |
+      SET @thread_id = ?,
+          @event_id = ?,
+          @nesting_event_id = ?
+    parameters:  [thread_id, event_id+2, event_id+1]
+  - sql: |
+      SELECT event_id, sql_text,
+             FORMAT_PICO_TIME(timer_wait) AS latency,
+             IF(end_event_id IS NULL, 'YES', 'NO') AS current
+        FROM ((SELECT event_id, end_event_id,
+                      timer_wait,
+                      sql_text, nesting_event_id,
+                      nesting_event_type
+                 FROM performance_schema.events_statements_current
+                WHERE thread_id = @thread_id
+              ) UNION (
+               SELECT event_id, end_event_id,
+                      timer_wait,
+                      sql_text, nesting_event_id,
+                      nesting_event_type
+                 FROM performance_schema.events_statements_history
+                WHERE thread_id = @thread_id
+              )
+             ) events
+       WHERE (nesting_event_type = 'TRANSACTION'
+              AND nesting_event_id = @event_id)
+             OR event_id = @nesting_event_id
+       ORDER BY event_id DESC
+    format:      vertical
+  - sql: |
+      SELECT *
+        FROM sys.session
+       WHERE trx_state = 'ACTIVE'
+             AND conn_id <> CONNECTION_ID()
+    format:      vertical

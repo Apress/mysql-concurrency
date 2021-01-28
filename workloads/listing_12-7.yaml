@@ -1,0 +1,41 @@
+--- # Listing 12-7. READ COMMITTED Semi-consistent reads
+name:        Listing 12-7
+description: READ COMMITTED Semi-consistent reads
+connections: 2
+queries:
+  - connection:  1
+    sql:         SET transaction_isolation = 'READ-COMMITTED'
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population * 1.10
+       WHERE Name = 'San Jose'
+             AND District = 'Southern Tagalog'
+  - connection:  2
+    sql:         SET transaction_isolation = 'READ-COMMITTED'
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population * 1.10
+       WHERE Name = 'San Jose'
+             AND District = 'Central Luzon'
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ROLLBACK
+investigations:
+  - sql: |
+      SELECT index_name, lock_type,
+             lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND lock_type = 'RECORD'
+             AND thread_id = ?
+       ORDER BY index_name, lock_data DESC
+    parameters:  [thread_id]

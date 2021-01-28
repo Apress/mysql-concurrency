@@ -1,0 +1,21 @@
+--- # Listing 8-2. Example of an InnoDB lock wait timeout
+name:        Listing 8-2
+description: Example of an InnoDB lock wait timeout
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  2
+    sql:         SET SESSION innodb_lock_wait_timeout = 3
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  1
+    sql:         ROLLBACK

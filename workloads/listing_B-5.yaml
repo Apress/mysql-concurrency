@@ -1,0 +1,57 @@
+--- # Listing B-5. Example demonstrating the workload syntax
+name:        Listing B-5
+description: Example demonstrating the workload syntax
+connections: 2
+concurrent:  No
+loops:       1
+queries:
+  - connection:  1
+    sql:         SET SESSION innodb_lock_wait_timeout = 1
+    silent:      No
+    wait:        Yes
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         SET @id = CEIL(RAND()*4079)
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM world.city
+       WHERE ID = @id
+    format:      json
+    store:       Yes
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  1
+    comment: This will cause a lock wait timeout
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE Name = ?
+    parameters:  [Name]
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ROLLBACK
+investigations:
+  - sql: |
+      SELECT thread_id, event_id, sys.format_statement(sql_text) AS 'SQL',
+             mysql_errno, message_text
+        FROM performance_schema.events_statements_history
+       WHERE thread_id IN ({thread_ids})
+             AND mysql_errno > 0
+       ORDER BY thread_id, event_id
+    format:      vertical
+  - sql: |
+       SELECT THREAD_ID, EVENT_ID, SQL_TEXT
+         FROM performance_schema.events_statements_history
+        WHERE thread_id = ? AND event_id > ?
+        ORDER BY thread_id, event_id
+    parameters:  [thread_id, event_id]
+    format:      vertical

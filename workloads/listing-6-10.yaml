@@ -1,0 +1,10 @@
+--- # Listing 6-10. Example output of the log_status table
+name:        Listing 6-10
+description: Example output of the log_status table
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM performance_schema.log_status
+    format:      vertical

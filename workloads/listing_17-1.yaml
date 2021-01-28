@@ -1,0 +1,4 @@
+--- # Listing 17-1. Locks and foreign keys
+name:           Listing 17-1
+description:    Locks and foreign keys
+implementation: [workloads.listing_17_1, ForeignKeys, {}]

@@ -1,0 +1,17 @@
+--- # Listing 2-6. Using the INNODB_METRICS view
+name:        Listing 2-6
+description: Using the INNODB_METRICS view
+connections: 1
+queries:
+  - connection:  1
+    sql:         SET GLOBAL innodb_monitor_enable = 'icp%'
+  - connection:  1
+    sql: |
+      SELECT NAME, SUBSYSTEM, COUNT, MIN_COUNT,
+             MAX_COUNT, AVG_COUNT,
+             STATUS, COMMENT
+        FROM information_schema.INNODB_METRICS
+             WHERE SUBSYSTEM = 'icp'
+    format:      vertical
+  - connection:  1
+    sql:         SET GLOBAL innodb_monitor_disable = 'module_icp'

@@ -1,0 +1,22 @@
+--- # Listing 7-1. Example of InnoDB record locks
+name:        Listing 7-1
+description: Example of InnoDB record locks
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE CountryCode = 'LUX'
+  - connection:  2
+    sql: |
+      SELECT thread_id, event_id,
+             object_schema, object_name, index_name,
+             lock_type, lock_mode, lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id = {thread_id_connection_1}
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

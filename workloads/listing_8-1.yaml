@@ -1,0 +1,13 @@
+--- # Listing 8-1. Example of synchronization waits
+name:        Listing 8-1
+description: Lock wait timeout for table lock request
+connections: 2
+queries:
+  - connection:  1
+    sql:         LOCK TABLES world.city WRITE
+  - connection:  2
+    sql:         SET SESSION lock_wait_timeout = 5
+  - connection:  2
+    sql:         LOCK TABLES world.city WRITE
+  - connection:  1
+    sql:         UNLOCK TABLES

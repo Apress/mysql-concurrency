@@ -1,0 +1,45 @@
+--- # Listing 13-1. Triggering flush lock contention
+name:        Listing 13-1
+description: Triggering flush lock contention
+connections: 3
+queries:
+  - connection:  1
+    sql:         SELECT city.*, SLEEP(3600) FROM world.city WHERE ID = 130
+    wait:        No
+    sleep:       2
+  - connection:  2
+    sql:         FLUSH TABLES WITH READ LOCK
+    wait:        No
+    sleep:       2
+  - connection:  3
+    sql:         SELECT * FROM world.city WHERE ID = 3805
+    wait:        No
+investigations:
+  - sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement,
+             statement_latency
+        FROM sys.session
+       WHERE command = 'Query'
+    format:      vertical
+  - sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement,
+             statement_latency
+        FROM sys.session
+       WHERE thd_id IN ({thread_ids})
+  - sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status,
+             owner_thread_id
+        FROM performance_schema.metadata_locks
+       WHERE owner_thread_id IN ({thread_ids})
+  - sql: |
+      SELECT thread_id, event_id,
+             object_schema, object_name, index_name,
+             lock_type, lock_mode, lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id IN ({thread_ids})
+  - sql:         EXPLAIN FOR CONNECTION {processlist_id_connection_1}
+  - sql:         KILL ?
+    parameters:  [processlist_id]

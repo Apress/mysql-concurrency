@@ -1,0 +1,34 @@
+--- # Listing 6-4. Example of waiting for table metadata lock
+name:        Listing 6-4
+description: Example of waiting for table metadata lock
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         SELECT * FROM world.city WHERE ID = 130
+    format:      vertical
+  - connection:  2
+    sql:         OPTIMIZE TABLE world.city
+    wait:        No
+    show_result: No
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+investigations:
+  - sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement, statement_latency,
+             last_statement, trx_state
+        FROM sys.session
+       WHERE conn_id IN ({processlist_ids})
+       ORDER BY conn_id
+    format:      vertical
+  - sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status,
+             owner_thread_id
+        FROM performance_schema.metadata_locks
+       WHERE owner_thread_id IN ({thread_ids})
+             AND object_type = 'TABLE'
+    format:      vertical

@@ -1,0 +1,36 @@
+--- # Listing 2-4. Example of a lock error in the statement tables
+name:        Listing 2-4
+description: Example of a lock error in the statement tables
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  2
+    sql:         SET SESSION innodb_lock_wait_timeout = 1
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  2
+    sql: |
+      SELECT thread_id, event_id,
+             FORMAT_PICO_TIME(lock_time) AS lock_time,
+             sys.format_statement(SQL_TEXT) AS statement,
+             digest, mysql_errno,
+             returned_sqlstate, message_text, errors
+        FROM performance_schema.events_statements_history
+       WHERE thread_id = PS_CURRENT_THREAD_ID()
+             AND mysql_errno > 0
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ROLLBACK

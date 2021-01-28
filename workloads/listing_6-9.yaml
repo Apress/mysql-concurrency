@@ -1,0 +1,23 @@
+--- # Listing 6-9. Example of a conflict for the backup lock
+name:        Listing 6-9
+description: Example of a conflict for the backup lock
+connections: 3
+protocol:    mysql
+queries:
+  - connection:  1
+    sql:         LOCK INSTANCE FOR BACKUP
+  - connection:  2
+    sql:         OPTIMIZE TABLE world.city
+    wait:        No
+    show_result: No
+  - connection:  3
+    sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status,
+             owner_thread_id
+        FROM performance_schema.metadata_locks
+       WHERE object_type = 'BACKUP LOCK'
+             AND owner_thread_id IN ({thread_ids_not_self})
+    format:      vertical
+  - connection:  1
+    sql:         UNLOCK INSTANCE

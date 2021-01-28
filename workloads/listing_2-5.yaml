@@ -1,0 +1,15 @@
+--- # Listing 2-5. Lock metrics
+name:        Listing 2-5
+description: Lock metrics
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      SELECT Variable_name,
+             Variable_value AS Value,
+             Enabled
+        FROM sys.metrics
+       WHERE Variable_name LIKE 'innodb_row_lock%'
+             OR Variable_name LIKE 'Table_locks%'
+             OR Variable_name LIKE 'innodb_rwlock_%'
+             OR Type = 'InnoDB Metrics - lock'

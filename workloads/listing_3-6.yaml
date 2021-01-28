@@ -1,0 +1,12 @@
+--- # Listing 3-6. Using the sys.metrics view to get the transaction metrics
+name:        Listing 3-6
+description: Using the sys.metrics view to get the transaction metrics
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      SELECT Variable_name AS Name,
+             Variable_value AS Value,
+             Enabled
+        FROM sys.metrics
+       WHERE Type = 'InnoDB Metrics - transaction'

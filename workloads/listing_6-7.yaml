@@ -1,0 +1,22 @@
+--- # Listing 6-7. Using explicit table locks
+name:        Listing 6-7
+description: Using explicit table locks
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      LOCK TABLES world.country READ,
+                  world.countrylanguage READ,
+                  world.city WRITE
+  - connection:  1
+    sql: |
+      UPDATE world.country
+        SET Population = Population + 1
+      WHERE Code = 'AUS'
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM sakila.film
+        WHERE film_id = 1
+  - connection:  1
+    sql:         UNLOCK TABLES

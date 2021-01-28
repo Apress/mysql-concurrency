@@ -1,0 +1,10 @@
+--- # Listing 4-5. The events_transactions_summary_global_by_event_name table
+name:        Listing 4-5
+description: The events_transactions_summary_global_by_event_name table
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM performance_schema.events_transactions_summary_global_by_event_name
+    format:      vertical

@@ -1,0 +1,32 @@
+--- # Listing 10-8. Updating a row in a table with foreign keys relationships
+name:        Listing 10-8
+description: Updating a row in a table with foreign keys relationships
+connections: 1
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE sakila.inventory
+         SET store_id = 1
+       WHERE inventory_id = 4090
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+investigations:
+  - sql: |
+      SELECT object_schema, object_name, lock_type,
+             index_name, lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id = ?
+    parameters:  [thread_id]
+    format:      vertical
+  - sql: |
+      SELECT object_type, object_schema, object_name,
+             column_name, lock_type, lock_duration
+        FROM performance_schema.metadata_locks
+       WHERE owner_thread_id = ?
+       ORDER BY object_type, object_schema, object_name,
+                column_name, lock_type
+    parameters:  [thread_id]
+    format:      vertical

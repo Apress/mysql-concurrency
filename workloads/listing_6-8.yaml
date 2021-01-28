@@ -1,0 +1,25 @@
+--- # Listing 6-8. Example of an InnoDB intention shared lock
+name:        Listing 6-8
+description: Example of an InnoDB intention shared lock
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM world.city
+       WHERE ID = 130
+         FOR SHARE
+    format:      vertical
+  - connection:  2
+    sql: |
+      SELECT engine, thread_id, object_schema,
+             object_name, lock_type, lock_mode,
+             lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE lock_type = 'TABLE'
+             AND thread_id = {thread_id_connection_1}
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

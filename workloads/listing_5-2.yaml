@@ -1,0 +1,29 @@
+--- # Listing 5-2. Example of obtaining exclusive locks
+name:        Listing 5-2
+description: Example of obtaining exclusive locks
+connections: 1
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  1
+    sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status
+        FROM performance_schema.metadata_locks
+       WHERE OWNER_THREAD_ID = PS_CURRENT_THREAD_ID()
+             AND OBJECT_SCHEMA <> 'performance_schema'
+    format:      vertical
+  - connection:  1
+    sql: |
+      SELECT engine, object_schema, object_name,
+             lock_type, lock_mode, lock_status
+        FROM performance_schema.data_locks
+       WHERE THREAD_ID = PS_CURRENT_THREAD_ID()
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

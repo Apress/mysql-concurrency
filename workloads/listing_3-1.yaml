@@ -1,0 +1,47 @@
+--- # Listing 3-1. Example transactions
+name:        Listing 3-1
+description: Example transactions
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         UPDATE world.city SET Population = Population + MOD(ID, 2) + SLEEP(0.01)
+    wait:        No
+    show_result: No
+  - connection:  2
+    sql:         SET SESSION autocommit = ON
+  - connection:  2
+    sql:         SELECT COUNT(*) FROM world.city WHERE ID > SLEEP(0.01)
+    wait:        No
+    show_result: No
+investigations:
+  - sql: |
+      SELECT *
+        FROM information_schema.INNODB_TRX
+       WHERE trx_mysql_thread_id IN ({processlist_ids})
+    format:      vertical
+  - sql: |
+      SELECT *
+        FROM information_schema.INNODB_TRX
+       WHERE trx_started < NOW() - INTERVAL 10 SECOND;
+    format:      vertical
+  - sql: |
+      SELECT thd.thread_id, thd.processlist_id,
+             trx.trx_id, stmt.event_id, trx.trx_started,
+             TO_SECONDS(NOW()) -
+                        TO_SECONDS(trx.trx_started
+                       ) AS age_seconds,
+             trx.trx_rows_locked, trx.trx_rows_modified,
+             FORMAT_PICO_TIME(stmt.timer_wait) AS latency,
+             stmt.rows_examined, stmt.rows_affected,
+             sys.format_statement(SQL_TEXT) as statement
+        FROM information_schema.INNODB_TRX trx
+             INNER JOIN performance_schema.threads thd
+                     ON thd.processlist_id = trx.trx_mysql_thread_id
+             INNER JOIN performance_schema.events_statements_current stmt
+                  USING (thread_id)
+       WHERE trx_started < NOW() - INTERVAL 10 SECOND
+    format:      vertical
+  - sql:         SHOW ENGINE INNODB STATUS
+    format:      vertical

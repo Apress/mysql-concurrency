@@ -1,0 +1,13 @@
+--- # Listing 18-1. Semaphore Waits
+name:           Listing 18-1
+description:    Semaphore Waits
+implementation: [workloads.listing_18_1, SemaphoreWaits, {}]
+investigations:
+  - sql: |
+      SELECT variable_name, variable_value AS value, enabled
+        FROM sys.metrics
+       WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+       ORDER BY variable_name
+  - sql:        SHOW ENGINE INNODB MUTEX
+  - sql:        SHOW ENGINE INNODB STATUS
+    format:     vertical

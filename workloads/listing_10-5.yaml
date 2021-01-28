@@ -1,0 +1,63 @@
+--- # Listing 10-5. The different between non-unique and unique secondary indexes
+name:        Listing 10-5
+description: The different between non-unique and unique secondary indexes
+connections: 2
+queries:
+  - connection:  1
+    sql:         DROP TABLE IF EXISTS world._tmp_city1
+  - connection:  1
+    sql: |
+      CREATE TABLE world._tmp_city1
+      SELECT *
+        FROM world.city
+       WHERE CountryCode = 'AUS'
+  - connection:  1
+    sql: |
+      ALTER TABLE world._tmp_city1
+        ADD PRIMARY KEY (ID),
+        ADD INDEX (Name)
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world._tmp_city1
+         SET Population = 5000000
+       WHERE Name = 'Sydney'
+  - connection:  2
+    sql:         DROP TABLE IF EXISTS world._tmp_city2
+  - connection:  2
+    sql: |
+      CREATE TABLE world._tmp_city2
+      SELECT *
+        FROM world.city
+       WHERE CountryCode = 'AUS'
+  - connection:  2
+    sql: |
+      ALTER TABLE world._tmp_city2
+        ADD PRIMARY KEY (ID),
+        ADD UNIQUE INDEX (Name)
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      UPDATE world._tmp_city2
+         SET Population = 5000000
+       WHERE Name = 'Sydney'
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  1
+    sql:         DROP TABLE world._tmp_city1
+  - connection:  2
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         DROP TABLE world._tmp_city2
+investigations:
+  - sql: |
+      SELECT index_name, lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND lock_type = 'RECORD'
+             AND thread_id = ?
+    parameters:  [thread_id]
+    format:      vertical

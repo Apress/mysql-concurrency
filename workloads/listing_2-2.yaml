@@ -1,0 +1,17 @@
+--- # Listing 2-2. Example of using the table_handles table
+name:        Listing 2-2
+description: Example of using the table_handles table
+connections: 1
+queries:
+  - connection:  1
+    sql:         LOCK TABLE world.city READ
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM performance_schema.table_handles
+       WHERE OBJECT_SCHEMA = 'world'
+             AND OBJECT_NAME = 'city'
+             AND OWNER_THREAD_ID = PS_CURRENT_THREAD_ID()
+    format:      vertical
+  - connection:  1
+    sql:         UNLOCK TABLES

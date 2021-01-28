@@ -1,0 +1,15 @@
+--- # Listing 10-11. Performing DDL on a table with foreign key relations
+name:        Listing 10-11
+description: Performing DDL on a table with foreign key relations
+connections: 2
+queries:
+  - connection:  1
+    sql:         OPTIMIZE TABLE sakila.inventory
+    wait:        No
+    show_result: No
+  - connection:  2
+    sql: |
+      SELECT object_name, lock_type, lock_duration
+        FROM performance_schema.metadata_locks
+       WHERE owner_thread_id = {thread_id_connection_1}
+             AND object_type = 'TABLE'

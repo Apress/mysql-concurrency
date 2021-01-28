@@ -1,0 +1,90 @@
+--- # Listing 14-1. Triggering metadata lock contention
+name:        Listing 14-1
+description: Triggering metadata lock contention
+connections: 3
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         SELECT * FROM world.city WHERE ID = 3805
+    format:      vertical
+  - connection:  1
+    sql:         SELECT Code, Name FROM world.country WHERE Code = 'USA'
+    format:      vertical
+    sleep:       2
+  - connection:  2
+    sql:         ALTER TABLE world.city ADD INDEX (Name)
+    wait:        No
+    sleep:       2
+  - connection:  3
+    sql:         SELECT * FROM world.city WHERE ID = 130
+    wait:        No
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ALTER TABLE world.city DROP INDEX Name
+investigations:
+  - sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement,
+             statement_latency
+        FROM sys.session
+       WHERE command = 'Query' OR trx_state = 'ACTIVE'
+    format:      vertical
+  - sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement,
+             statement_latency
+        FROM sys.session
+       WHERE thd_id IN ({thread_ids})
+  - sql: |
+      SELECT *
+        FROM sys.schema_table_lock_waits
+    format:      vertical
+  - sql: |
+      SELECT *
+        FROM sys.schema_table_lock_waits
+       WHERE waiting_lock_type = 'EXCLUSIVE'
+             AND waiting_pid <> blocking_pid
+    format:      vertical
+  - sql: |
+      SELECT blocking_pid, COUNT(*)
+        FROM sys.schema_table_lock_waits
+       WHERE waiting_pid <> blocking_pid
+       GROUP BY blocking_pid
+       ORDER BY COUNT(*) DESC
+  - sql: |
+      SELECT *
+        FROM information_schema.INNODB_TRX
+       WHERE trx_mysql_thread_id = {processlist_id_connection_1}
+    format:      vertical
+  - sql: |
+      SELECT *
+        FROM performance_schema.events_transactions_current
+       WHERE thread_id = {thread_id_connection_1}
+    format:      vertical
+  - sql: |
+      SELECT event_id, current_schema, sql_text
+        FROM performance_schema.events_statements_history
+       WHERE thread_id = {thread_id_connection_1}
+             AND nesting_event_id = {event_id_connection_1+2}
+             AND nesting_event_type = 'TRANSACTION'
+    format:      vertical
+  - sql: |
+      SELECT attr_name, attr_value
+        FROM performance_schema.session_connect_attrs
+       WHERE processlist_id = {processlist_id_connection_1}
+       ORDER BY attr_name
+  - sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status,
+             owner_thread_id
+        FROM performance_schema.metadata_locks
+       WHERE owner_thread_id IN ({thread_ids})
+  - sql: |
+      SELECT thread_id, event_id,
+             object_schema, object_name, index_name,
+             lock_type, lock_mode, lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id IN ({thread_ids})

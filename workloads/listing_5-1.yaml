@@ -1,0 +1,26 @@
+--- # Listing 5-1. Example of obtaining a shared lock
+name:        Listing 5-1
+description: Example of obtaining a shared lock
+connections: 1
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         SELECT * FROM world.city WHERE ID = 130 FOR SHARE
+  - connection:  1
+    sql: |
+      SELECT object_type, object_schema, object_name,
+             lock_type, lock_duration, lock_status
+        FROM performance_schema.metadata_locks
+       WHERE OWNER_THREAD_ID = PS_CURRENT_THREAD_ID()
+             AND OBJECT_SCHEMA <> 'performance_schema'
+    format:      vertical
+  - connection:  1
+    sql: |
+      SELECT engine, object_schema, object_name,
+             lock_type, lock_mode, lock_status
+        FROM performance_schema.data_locks
+       WHERE THREAD_ID = PS_CURRENT_THREAD_ID()
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

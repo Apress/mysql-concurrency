@@ -1,0 +1,31 @@
+--- # Listing 10-1. Updating row by non-unique secondary index
+name:        Listing 10-1
+description: Updating row by non-unique secondary index
+connections: 2
+queries:
+  - connection:  1
+    sql: |
+      ALTER TABLE world.city
+        ADD INDEX (Name)
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = 5000000
+       WHERE Name = 'Sydney'
+  - connection:  2
+    sql: |
+      SELECT index_name, lock_type,
+             lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND thread_id = {thread_ids_not_self}
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  1
+    sql: |
+      ALTER TABLE world.city
+       DROP INDEX Name

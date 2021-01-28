@@ -1,0 +1,20 @@
+--- # Listing 2-1. Example use of the metadata_locks table
+name:        Listing 2-1
+description: Example use of the metadata_locks table
+connections: 1
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         SELECT * FROM world.city WHERE ID = 130
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM performance_schema.metadata_locks
+       WHERE OBJECT_TYPE = 'TABLE'
+             AND OBJECT_SCHEMA = 'world'
+             AND OBJECT_NAME = 'city'
+             AND OWNER_THREAD_ID = PS_CURRENT_THREAD_ID()
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

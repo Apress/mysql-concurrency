@@ -1,0 +1,27 @@
+--- # Listing 6-3. Example of waiting for a flush lock
+name:        Listing 6-3
+description: Example of waiting for a flush lock
+connections: 4
+queries:
+  - connection:  1
+    sql:         SELECT city.*, SLEEP(3) FROM world.city WHERE ID = 130
+    wait:        No
+    show_result: No
+  - connection:  2
+    sql:         FLUSH TABLES world.city
+    wait:        No
+    show_result: No
+  - connection:  3
+    sql:         SELECT * FROM world.city WHERE ID = 201
+    wait:        No
+    show_result: No
+  - connection:  4
+    comment:     Query sys.session for the three threads involved in the lock situation
+    sql: |
+      SELECT thd_id, conn_id, state,
+             current_statement
+        FROM sys.session
+       WHERE current_statement IS NOT NULL
+             AND thd_id IN ({thread_ids_not_self})
+       ORDER BY thd_id
+    format:      vertical

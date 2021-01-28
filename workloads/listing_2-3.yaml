@@ -1,0 +1,21 @@
+--- # Listing 2-3. Using the data_locks table
+name:        Listing 2-3
+description: Using the data_locks table
+connections: 1
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM world.city
+       WHERE ID = 130
+         FOR SHARE
+  - connection:  1
+    sql: |
+      SELECT *
+        FROM performance_schema.data_locks
+       WHERE THREAD_ID = PS_CURRENT_THREAD_ID()
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

@@ -1,0 +1,35 @@
+--- # Listing 2-7. An example of creating a deadlock
+name:        Listing 2-7
+description: An example of creating a deadlock
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 3805
+  - connection:  2
+    wait:        No
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 3805
+investigations:
+  - sql:         SET GLOBAL innodb_status_output_locks = ON
+  - sql:         SET GLOBAL innodb_status_output_locks = OFF
+  - sql:         SHOW ENGINE INNODB STATUS
+    format:      vertical

@@ -1,0 +1,24 @@
+--- # Listing 9-1. Record locks without an index on the Name column
+name:        Listing 9-1
+description: Record locks without an index on the Name column
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT ID, Name, CountryCode, District
+        FROM world.city
+       WHERE Name = 'Sydney'
+         FOR SHARE
+  - connection:  2
+    sql: |
+      SELECT index_name, lock_type,
+             lock_mode, COUNT(*)
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND thread_id = {thread_ids_not_self}
+       GROUP BY index_name, lock_type, lock_mode
+  - connection:  1
+    sql:         ROLLBACK

@@ -1,0 +1,45 @@
+--- # Listing 10-4. Updating rows in descending order by descending index
+name:        Listing 10-4
+description: Updating rows in descending order by descending index
+connections: 1
+queries:
+  - connection:  1
+    sql: |
+      ALTER TABLE world.city
+        ADD INDEX (Population DESC)
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population * 1.10
+       WHERE Population BETWEEN 1000000 AND 2000000
+       ORDER BY Population DESC
+       LIMIT 3
+completions:
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  1
+    sql: |
+      ALTER TABLE world.city
+       DROP INDEX Population
+investigations:
+  - sql: |
+      SELECT index_name, lock_type,
+             lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND lock_type = 'RECORD'
+             AND thread_id = ?
+       ORDER BY index_name, lock_data DESC
+    parameters:  [thread_id]
+  - sql: |
+      SELECT index_name, lock_type,
+             lock_mode, COUNT(*)
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND thread_id = ?
+       GROUP BY index_name, lock_type, lock_mode
+    parameters:  [thread_id]

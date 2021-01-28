@@ -1,0 +1,28 @@
+--- # Listing 9-4. The locks held in the READ-COMMITTED transaction isolation level
+name:        Listing 9-4
+description: The locks held in the READ-COMMITTED transaction isolation level
+connections: 2
+queries:
+  - connection:  1
+    sql:         SET SESSION transaction_isolation = 'READ-COMMITTED'
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = 5000000
+       WHERE Name = 'Sydney'
+             AND CountryCode = 'AUS'
+  - connection:  2
+    sql: |
+      SELECT index_name, lock_type,
+             lock_mode, COUNT(*)
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND thread_id = {thread_ids_not_self}
+       GROUP BY index_name, lock_type, lock_mode
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  1
+    sql:         SET SESSION transaction_isolation = @@global.transaction_isolation

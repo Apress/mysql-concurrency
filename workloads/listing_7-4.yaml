@@ -1,0 +1,41 @@
+--- # Listing 7-4. Example of synchronization waits
+name:        Listing 7-4
+description: Example of synchronization waits
+connections: 2
+queries:
+  - connection:  1
+    sql: |
+      UPDATE performance_schema.setup_instruments
+         SET ENABLED = 'YES',
+             TIMED = 'YES'
+       WHERE NAME LIKE 'wait/synch/%'
+  - connection:  1
+    sql: |
+      UPDATE performance_schema.setup_consumers
+         SET ENABLED = 'YES'
+       WHERE NAME IN ('events_waits_current', 'events_waits_history_long')
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE CountryCode = 'USA'
+  - connection:  1
+    sql: |
+      SELECT REPLACE(event_name, 'wait/synch/', '') AS event, COUNT(*)
+        FROM performance_schema.events_waits_history_long
+       WHERE thread_id = {thread_id_connection_2}
+             AND event_name LIKE 'wait/synch/%'
+       GROUP BY event_name
+        WITH ROLLUP
+       ORDER BY COUNT(*)
+  - connection:  1
+    sql: |
+      UPDATE performance_schema.setup_instruments
+         SET ENABLED = 'NO',
+             TIMED = 'NO'
+       WHERE NAME LIKE 'wait/synch/%'
+  - connection:  1
+    sql: |
+      UPDATE performance_schema.setup_consumers
+         SET ENABLED = 'NO'
+       WHERE NAME IN ('events_waits_current', 'events_waits_history_long')

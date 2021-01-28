@@ -1,0 +1,46 @@
+--- # Listing 8-3. Example of a deadlock
+name:        Listing 8-3
+description: Example of a deadlock
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 3805
+  - connection:  2
+    wait:        No
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 130
+  - connection:  1
+    sql: |
+      UPDATE world.city
+         SET Population = Population + 1
+       WHERE ID = 3805
+  - connection:  1
+    sql:         ROLLBACK
+  - connection:  2
+    sql:         ROLLBACK
+investigations:
+  - sql:         SHOW ENGINE INNODB STATUS
+    format:      vertical
+  - sql: |
+      SELECT thread_id, event_id, sql_text,
+             mysql_errno, returned_sqlstate, message_text,
+             errors, warnings
+        FROM performance_schema.events_statements_history
+       WHERE thread_id = ? AND event_id > ?
+       ORDER BY event_id
+    parameters:  [thread_id, event_id]
+    format:      vertical

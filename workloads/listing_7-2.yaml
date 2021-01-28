@@ -1,0 +1,27 @@
+--- # Listing 7-2. Example of predicate/page locks
+name:        Listing 7-2
+description: Example of predicate/page locks
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      UPDATE sakila.address
+         SET address = '42 Concurrency Boulevard',
+             district = 'Punjab',
+             city_id = 208,
+             postal_code = 40509,
+             location = ST_GeomFromText('POINT(75.91 31.53)', 0)
+       WHERE address_id = 372
+  - connection:  2
+    sql: |
+      SELECT engine_lock_id, thread_id, event_id,
+             object_schema, object_name, index_name,
+             lock_type, lock_mode, lock_status, lock_data
+        FROM performance_schema.data_locks
+       WHERE thread_id = {thread_ids_not_self}
+             AND index_name = 'idx_location'
+    format:      vertical
+  - connection:  1
+    sql:         ROLLBACK

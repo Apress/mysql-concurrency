@@ -1,0 +1,46 @@
+--- # Listing 16-1. Triggering an InnoDB deadlock
+name:        Listing 16-1
+description: Triggering an InnoDB deadlock
+connections: 2
+queries:
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql:         UPDATE world.city SET Population = Population * 1.10 WHERE CountryCode = 'AUS'
+  - connection:  2
+    sql:         START TRANSACTION
+  - connection:  2
+    sql:         UPDATE world.country SET Population = Population + 146000 WHERE Code = 'AUS'
+  - connection:  1
+    sql:         UPDATE world.country SET Population = Population * 1.10 WHERE Code = 'AUS'
+    wait:        No
+  - connection:  2
+    sql:         INSERT INTO world.city VALUES (4080, 'Darwin', 'AUS', 'Northern Territory', 146000)
+  - connection:  2
+    sql:         ROLLBACK
+  - connection:  1
+    sql:         ROLLBACK
+investigations:
+  - sql:         SHOW ENGINE INNODB STATUS
+    format:      vertical
+  - sql:         SELECT * FROM sys.innodb_lock_waits
+    format:      vertical
+  - sql: |
+      SELECT *
+        FROM world.city
+       WHERE CountryCode = 'AUT'
+       ORDER BY CountryCode, ID
+       LIMIT 1
+  - sql: |
+      SELECT sql_text, nesting_event_id,
+             nesting_event_type, mysql_errno,
+             IFNULL(error_name, '') AS error,
+             message_text
+        FROM performance_schema.events_statements_history
+             LEFT OUTER JOIN performance_schema.events_errors_summary_global_by_error
+                     ON error_number = mysql_errno
+       WHERE thread_id = PS_THREAD_ID(?)
+             AND event_id > ?
+       ORDER BY event_id
+    parameters:  [processlist_id, event_id]
+    format:      vertical

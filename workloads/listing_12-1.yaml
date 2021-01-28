@@ -1,0 +1,27 @@
+--- # Listing 12-1. Read locking in the SERIALIZABLE transaction isolation level
+name:        Listing 12-1
+description: Read locking in the SERIALIZABLE transaction isolation level
+connections: 2
+queries:
+  - connection:  1
+    sql:         SET transaction_isolation = 'SERIALIZABLE'
+  - connection:  1
+    sql:         START TRANSACTION
+  - connection:  1
+    sql: |
+      SELECT ID, Name, Population
+        FROM world.city
+       WHERE CountryCode = 'SVK'
+             AND District = 'Bratislava'
+  - connection:  2
+    sql: |
+      SELECT index_name, lock_type,
+             lock_mode, lock_data
+        FROM performance_schema.data_locks
+       WHERE object_schema = 'world'
+             AND object_name = 'city'
+             AND lock_type = 'RECORD'
+             AND thread_id = {thread_ids_not_self}
+       ORDER BY index_name, lock_data DESC
+  - connection:  1
+    sql:         ROLLBACK
