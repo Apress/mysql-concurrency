@@ -1,0 +1,211 @@
+-- Connection 3
+Connection 3> SHOW ENGINE INNODB STATUS\G
+*************************** 1. row ***************************
+  Type: InnoDB
+  Name:
+Status:
+=====================================
+2020-08-07 20:09:36 0x8bf0 INNODB MONITOR OUTPUT
+=====================================
+Per second averages calculated from the last 40 seconds
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 1164 srv_active, 0 srv_shutdown, 200438 srv_idle
+srv_master_thread log flush and writes: 0
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 1099
+OS WAIT ARRAY INFO: signal count 1057
+RW-shared spins 62, rounds 63, OS waits 1
+RW-excl spins 1024, rounds 12587, OS waits 373
+RW-sx spins 39, rounds 1089, OS waits 35
+Spin rounds per wait: 1.02 RW-shared, 12.29 RW-excl, 27.92 RW-sx
+------------------------
+LATEST DETECTED DEADLOCK
+------------------------
+2020-08-07 20:08:55 0x9f0
+*** (1) TRANSACTION:
+TRANSACTION 537544, ACTIVE 0 sec starting index read
+mysql tables in use 1, locked 1
+LOCK WAIT 6 lock struct(s), heap size 1136, 30 row lock(s), undo log entries 14
+MySQL thread id 762, OS thread handle 10344, query id 3282590 localhost ::1 root updating
+UPDATE world.country SET Population = Population * 1.10 WHERE Code = 'AUS'
+
+*** (1) HOLDS THE LOCK(S):
+RECORD LOCKS space id 1923 page no 14 n bits 1272 index CountryCode of table `world`.`city` trx id 537544 lock_mode X locks gap before rec
+Record lock, heap no 603 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+ 0: len 3; hex 415554; asc AUT;;
+ 1: len 4; hex 800005f3; asc     ;;
+
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 1924 page no 5 n bits 120 index PRIMARY of table `world`.`country` trx id 537544 lock_mode X locks rec but not gap waiting
+Record lock, heap no 16 PHYSICAL RECORD: n_fields 17; compact format; info bits 0
+ 0: len 3; hex 415553; asc AUS;;
+ 1: len 6; hex 0000000833c9; asc     3 ;;
+ 2: len 7; hex 02000001750a3c; asc     u <;;
+ 3: len 30; hex 4175737472616c6961202020202020202020202020202020202020202020; asc Australia                     ; (total 52 bytes);
+ 4: len 1; hex 05; asc  ;;
+ 5: len 26; hex 4175737472616c696120616e64204e6577205a65616c616e6420; asc Australia and New Zealand ;;
+ 6: len 5; hex 80761f2400; asc  v $ ;;
+ 7: len 2; hex 876d; asc  m;;
+ 8: len 4; hex 812267c0; asc  "g ;;
+ 9: len 2; hex cf08; asc   ;;
+ 10: len 5; hex 80055bce00; asc   [  ;;
+ 11: len 5; hex 8005fecf00; asc      ;;
+ 12: len 30; hex 4175737472616c6961202020202020202020202020202020202020202020; asc Australia                     ; (total 45 bytes);
+ 13: len 30; hex 436f6e737469747574696f6e616c204d6f6e61726368792c204665646572; asc Constitutional Monarchy, Feder; (total 45 bytes);
+ 14: len 30; hex 456c69736162657468204949202020202020202020202020202020202020; asc Elisabeth II                  ; (total 60 bytes);
+ 15: len 4; hex 80000087; asc     ;;
+ 16: len 2; hex 4155; asc AU;;
+
+
+*** (2) TRANSACTION:
+TRANSACTION 537545, ACTIVE 0 sec inserting
+mysql tables in use 1, locked 1
+LOCK WAIT 4 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 2
+MySQL thread id 763, OS thread handle 37872, query id 3282591 localhost ::1 root update
+INSERT INTO world.city VALUES (4080, 'Darwin', 'AUS', 'Northern Territory', 146000)
+
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 1924 page no 5 n bits 120 index PRIMARY of table `world`.`country` trx id 537545 lock_mode X locks rec but not gap
+Record lock, heap no 16 PHYSICAL RECORD: n_fields 17; compact format; info bits 0
+ 0: len 3; hex 415553; asc AUS;;
+ 1: len 6; hex 0000000833c9; asc     3 ;;
+ 2: len 7; hex 02000001750a3c; asc     u <;;
+ 3: len 30; hex 4175737472616c6961202020202020202020202020202020202020202020; asc Australia                     ; (total 52 bytes);
+ 4: len 1; hex 05; asc  ;;
+ 5: len 26; hex 4175737472616c696120616e64204e6577205a65616c616e6420; asc Australia and New Zealand ;;
+ 6: len 5; hex 80761f2400; asc  v $ ;;
+ 7: len 2; hex 876d; asc  m;;
+ 8: len 4; hex 812267c0; asc  "g ;;
+ 9: len 2; hex cf08; asc   ;;
+ 10: len 5; hex 80055bce00; asc   [  ;;
+ 11: len 5; hex 8005fecf00; asc      ;;
+ 12: len 30; hex 4175737472616c6961202020202020202020202020202020202020202020; asc Australia                     ; (total 45 bytes);
+ 13: len 30; hex 436f6e737469747574696f6e616c204d6f6e61726368792c204665646572; asc Constitutional Monarchy, Feder; (total 45 bytes);
+ 14: len 30; hex 456c69736162657468204949202020202020202020202020202020202020; asc Elisabeth II                  ; (total 60 bytes);
+ 15: len 4; hex 80000087; asc     ;;
+ 16: len 2; hex 4155; asc AU;;
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 1923 page no 14 n bits 1272 index CountryCode of table `world`.`city` trx id 537545 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 603 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+ 0: len 3; hex 415554; asc AUT;;
+ 1: len 4; hex 800005f3; asc     ;;
+
+*** WE ROLL BACK TRANSACTION (2)
+------------
+TRANSACTIONS
+------------
+Trx id counter 537548
+Purge done for trx's n:o < 537548 undo n:o < 0 state: running but idle
+History list length 2
+LIST OF TRANSACTIONS FOR EACH SESSION:
+---TRANSACTION 284186648312416, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648311584, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648310752, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648309920, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648315744, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648314912, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648314080, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648313248, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648309088, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648308256, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 284186648307424, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+--------
+FILE I/O
+--------
+I/O thread 0 state: wait Windows aio (insert buffer thread)
+I/O thread 1 state: wait Windows aio (log thread)
+I/O thread 2 state: wait Windows aio (read thread)
+I/O thread 3 state: wait Windows aio (read thread)
+I/O thread 4 state: wait Windows aio (read thread)
+I/O thread 5 state: wait Windows aio (read thread)
+I/O thread 6 state: wait Windows aio (write thread)
+I/O thread 7 state: wait Windows aio (write thread)
+I/O thread 8 state: wait Windows aio (write thread)
+I/O thread 9 state: wait Windows aio (write thread)
+Pending normal aio reads: [0, 0, 0, 0] , aio writes: [0, 0, 0, 0] ,
+ ibuf aio reads:, log i/o's:, sync i/o's:
+Pending flushes (fsync) log: 0; buffer pool: 2
+2272 OS file reads, 68722 OS file writes, 30901 OS fsyncs
+0.00 reads/s, 0 avg bytes/read, 0.42 writes/s, 0.25 fsyncs/s
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 13, seg size 15, 0 merges
+merged operations:
+ insert 0, delete mark 0, delete 0
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 34679, node heap has 2 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 2 buffer(s)
+Hash table size 34679, node heap has 2 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 2 buffer(s)
+Hash table size 34679, node heap has 6 buffer(s)
+0.00 hash searches/s, 0.37 non-hash searches/s
+---
+LOG
+---
+Log sequence number          5774075682
+Log buffer assigned up to    5774075682
+Log buffer completed up to   5774075682
+Log written up to            5774075682
+Log flushed up to            5774075682
+Added dirty pages up to      5774075682
+Pages flushed up to          5774075682
+Last checkpoint at           5774075682
+28546 log i/o's done, 0.10 log i/o's/second
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 137363456
+Dictionary memory allocated 612044
+Buffer pool size   8192
+Free buffers       5466
+Database pages     2709
+Old database pages 982
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 3708, not young 2016
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 2230, created 1599, written 29728
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 2709, unzip_LRU len: 0
+I/O sum[9]:cur[0], unzip sum[0]:cur[0]
+--------------
+ROW OPERATIONS
+--------------
+0 queries inside InnoDB, 0 queries in queue
+0 read views open inside InnoDB
+Process ID=13800, Main thread ID=0000000000004F24 , state=sleeping
+Number of rows inserted 5347, updated 4623, deleted 0, read 13191
+0.00 inserts/s, 0.00 updates/s, 0.00 deletes/s, 0.00 reads/s
+Number of system rows inserted 5293, updated 3757, deleted 5191, read 30919
+0.00 inserts/s, 0.00 updates/s, 0.00 deletes/s, 0.00 reads/s
+----------------------------
+END OF INNODB MONITOR OUTPUT
+============================
+
+1 row in set (0.0009 sec)

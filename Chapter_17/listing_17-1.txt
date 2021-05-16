@@ -1,0 +1,542 @@
+********************************************
+*                                          *
+*   Listing 17-1. Locks and foreign keys   *
+*                                          *
+********************************************
+
+
+Specify the number of seconds to run for (10-3600) [15]:
+Specify the sleep factor (0-30) [15]:
+
+-- Connection   Processlist ID   Thread ID   Event ID
+-- --------------------------------------------------
+--          1              462         792          6
+--          2              463         793          6
+--          3              464         794          6
+--          4              465         795          6
+--          5              466         796          6
+
+
+
+mysql> SELECT error_number, error_name, sum_error_raised
+         FROM performance_schema.events_errors_summary_global_by_error
+        WHERE error_name IN ('ER_LOCK_WAIT_TIMEOUT', 'ER_LOCK_DEADLOCK')
++--------------+----------------------+------------------+
+| error_number | error_name           | sum_error_raised |
++--------------+----------------------+------------------+
+|         1205 | ER_LOCK_WAIT_TIMEOUT |              310 |
+|         1213 | ER_LOCK_DEADLOCK     |               12 |
++--------------+----------------------+------------------+
+
+mysql> SELECT event_name, count_star, sum_errors
+         FROM performance_schema.events_statements_summary_global_by_event_name
+        WHERE event_name IN ('statement/sql/alter_table',
+                             'statement/sql/update')
++---------------------------+------------+------------+
+| event_name                | count_star | sum_errors |
++---------------------------+------------+------------+
+| statement/sql/alter_table |        113 |        101 |
+| statement/sql/update      |       4470 |        188 |
++---------------------------+------------+------------+
+
+mysql> SELECT Variable_name, Variable_value
+         FROM sys.metrics
+        WHERE Variable_name IN (
+                 'innodb_row_lock_current_waits',
+                 'lock_row_lock_current_waits',
+                 'innodb_row_lock_time',
+                 'innodb_row_lock_waits',
+                 'lock_deadlocks',
+                 'lock_timeouts'
+              )
++-------------------------------+----------------+
+| Variable_name                 | Variable_value |
++-------------------------------+----------------+
+| innodb_row_lock_current_waits | 0              |
+| innodb_row_lock_time          | 409555         |
+| innodb_row_lock_waits         | 384            |
+| lock_deadlocks                | 0              |
+| lock_row_lock_current_waits   | 0              |
+| lock_timeouts                 | 188            |
++-------------------------------+----------------+
+
+mysql> SELECT object_name, lock_type, lock_status,
+              owner_thread_id, owner_event_id
+         FROM performance_schema.metadata_locks
+        WHERE object_type = 'TABLE'
+              AND object_schema = 'sakila'
+        ORDER BY owner_thread_id, object_name, lock_type
+*************************** 1. row ***************************
+    object_name: category
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 792
+ owner_event_id: 9
+*************************** 2. row ***************************
+    object_name: film
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 792
+ owner_event_id: 9
+*************************** 3. row ***************************
+    object_name: film_category
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 792
+ owner_event_id: 9
+*************************** 4. row ***************************
+    object_name: category
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 793
+ owner_event_id: 9
+*************************** 5. row ***************************
+    object_name: film
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 793
+ owner_event_id: 9
+*************************** 6. row ***************************
+    object_name: film_category
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 793
+ owner_event_id: 9
+*************************** 7. row ***************************
+    object_name: address
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 8. row ***************************
+    object_name: customer
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 9. row ***************************
+    object_name: inventory
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 10. row ***************************
+    object_name: payment
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 11. row ***************************
+    object_name: rental
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 12. row ***************************
+    object_name: staff
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 13. row ***************************
+    object_name: store
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 794
+ owner_event_id: 10
+*************************** 14. row ***************************
+    object_name: address
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 15. row ***************************
+    object_name: customer
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 16. row ***************************
+    object_name: inventory
+      lock_type: SHARED_READ
+    lock_status: PENDING
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 17. row ***************************
+    object_name: payment
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 18. row ***************************
+    object_name: rental
+      lock_type: SHARED_WRITE
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 19. row ***************************
+    object_name: staff
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 20. row ***************************
+    object_name: store
+      lock_type: SHARED_READ
+    lock_status: GRANTED
+owner_thread_id: 795
+ owner_event_id: 10
+*************************** 21. row ***************************
+    object_name: #sql-35e8_1d2
+      lock_type: EXCLUSIVE
+    lock_status: GRANTED
+owner_thread_id: 796
+ owner_event_id: 9
+*************************** 22. row ***************************
+    object_name: film
+      lock_type: SHARED_UPGRADABLE
+    lock_status: GRANTED
+owner_thread_id: 796
+ owner_event_id: 9
+*************************** 23. row ***************************
+    object_name: inventory
+      lock_type: EXCLUSIVE
+    lock_status: PENDING
+owner_thread_id: 796
+ owner_event_id: 9
+*************************** 24. row ***************************
+    object_name: inventory
+      lock_type: SHARED_UPGRADABLE
+    lock_status: GRANTED
+owner_thread_id: 796
+ owner_event_id: 9
+*************************** 25. row ***************************
+    object_name: rental
+      lock_type: SHARED_UPGRADABLE
+    lock_status: GRANTED
+owner_thread_id: 796
+ owner_event_id: 9
+*************************** 26. row ***************************
+    object_name: store
+      lock_type: SHARED_UPGRADABLE
+    lock_status: GRANTED
+owner_thread_id: 796
+ owner_event_id: 9
+
+mysql> SELECT object_name, COUNT(*)
+         FROM performance_schema.metadata_locks
+        WHERE object_type = 'TABLE'
+              AND object_schema = 'sakila'
+        GROUP BY object_name
+        ORDER BY object_name
++---------------+----------+
+| object_name   | COUNT(*) |
++---------------+----------+
+| #sql-35e8_1d2 |        1 |
+| address       |        2 |
+| category      |        2 |
+| customer      |        2 |
+| film          |        3 |
+| film_category |        2 |
+| inventory     |        4 |
+| payment       |        2 |
+| rental        |        3 |
+| staff         |        2 |
+| store         |        3 |
++---------------+----------+
+
+mysql> SELECT * FROM sys.schema_table_lock_waits
+*************************** 1. row ***************************
+               object_schema: sakila
+                 object_name: inventory
+           waiting_thread_id: 796
+                 waiting_pid: 466
+             waiting_account: root@localhost
+           waiting_lock_type: EXCLUSIVE
+       waiting_lock_duration: TRANSACTION
+               waiting_query: ALTER TABLE sakila.inventory FORCE
+          waiting_query_secs: 0
+ waiting_query_rows_affected: 0
+ waiting_query_rows_examined: 0
+          blocking_thread_id: 794
+                blocking_pid: 464
+            blocking_account: root@localhost
+          blocking_lock_type: SHARED_READ
+      blocking_lock_duration: TRANSACTION
+     sql_kill_blocking_query: KILL QUERY 464
+sql_kill_blocking_connection: KILL 464
+*************************** 2. row ***************************
+               object_schema: sakila
+                 object_name: inventory
+           waiting_thread_id: 795
+                 waiting_pid: 465
+             waiting_account: root@localhost
+           waiting_lock_type: SHARED_READ
+       waiting_lock_duration: TRANSACTION
+               waiting_query: UPDATE sakila.customer SET active = IF(active = 1, 0, 1) WHERE customer_id = 99
+          waiting_query_secs: 0
+ waiting_query_rows_affected: 0
+ waiting_query_rows_examined: 0
+          blocking_thread_id: 794
+                blocking_pid: 464
+            blocking_account: root@localhost
+          blocking_lock_type: SHARED_READ
+      blocking_lock_duration: TRANSACTION
+     sql_kill_blocking_query: KILL QUERY 464
+sql_kill_blocking_connection: KILL 464
+*************************** 3. row ***************************
+               object_schema: sakila
+                 object_name: inventory
+           waiting_thread_id: 796
+                 waiting_pid: 466
+             waiting_account: root@localhost
+           waiting_lock_type: EXCLUSIVE
+       waiting_lock_duration: TRANSACTION
+               waiting_query: ALTER TABLE sakila.inventory FORCE
+          waiting_query_secs: 0
+ waiting_query_rows_affected: 0
+ waiting_query_rows_examined: 0
+          blocking_thread_id: 796
+                blocking_pid: 466
+            blocking_account: root@localhost
+          blocking_lock_type: SHARED_UPGRADABLE
+      blocking_lock_duration: TRANSACTION
+     sql_kill_blocking_query: KILL QUERY 466
+sql_kill_blocking_connection: KILL 466
+*************************** 4. row ***************************
+               object_schema: sakila
+                 object_name: inventory
+           waiting_thread_id: 795
+                 waiting_pid: 465
+             waiting_account: root@localhost
+           waiting_lock_type: SHARED_READ
+       waiting_lock_duration: TRANSACTION
+               waiting_query: UPDATE sakila.customer SET active = IF(active = 1, 0, 1) WHERE customer_id = 99
+          waiting_query_secs: 0
+ waiting_query_rows_affected: 0
+ waiting_query_rows_examined: 0
+          blocking_thread_id: 796
+                blocking_pid: 466
+            blocking_account: root@localhost
+          blocking_lock_type: SHARED_UPGRADABLE
+      blocking_lock_duration: TRANSACTION
+     sql_kill_blocking_query: KILL QUERY 466
+sql_kill_blocking_connection: KILL 466
+
+mysql> SELECT blocking_pid, COUNT(*)
+         FROM sys.schema_table_lock_waits
+        WHERE waiting_pid <> blocking_pid
+        GROUP BY blocking_pid
+        ORDER BY COUNT(*) DESC
++--------------+----------+
+| blocking_pid | COUNT(*) |
++--------------+----------+
+|          464 |        2 |
+|          466 |        1 |
++--------------+----------+
+
+mysql> SELECT thd_id, conn_id, command, state,
+              current_statement, time, statement_latency,
+              trx_latency, trx_state
+         FROM sys.session
+        WHERE thd_id IN (792, 793, 794, 795, 796)
+        ORDER BY conn_id
+*************************** 1. row ***************************
+           thd_id: 792
+          conn_id: 462
+          command: Sleep
+            state: NULL
+current_statement: UPDATE sakila.film_category SET category_id = IF(category_id = 7, 16, 7) WHERE film_id = 64
+             time: 2
+statement_latency: NULL
+      trx_latency: 2.09 s
+        trx_state: ACTIVE
+*************************** 2. row ***************************
+           thd_id: 793
+          conn_id: 463
+          command: Query
+            state: updating
+current_statement: UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+             time: 2
+statement_latency: 1.59 s
+      trx_latency: 1.59 s
+        trx_state: ACTIVE
+*************************** 3. row ***************************
+           thd_id: 794
+          conn_id: 464
+          command: Sleep
+            state: NULL
+current_statement: SELECT COUNT(*)       FROM performance_schema.metadata_locks   ... wner_thread_id IN (795)            AND lock_status = 'PENDING'
+             time: 0
+statement_latency: NULL
+      trx_latency: 1.09 s
+        trx_state: ACTIVE
+*************************** 4. row ***************************
+           thd_id: 795
+          conn_id: 465
+          command: Query
+            state: Waiting for table metadata lock
+current_statement: UPDATE sakila.customer SET active = IF(active = 1, 0, 1) WHERE customer_id = 99
+             time: 0
+statement_latency: 88.18 ms
+      trx_latency: 88.43 ms
+        trx_state: ACTIVE
+*************************** 5. row ***************************
+           thd_id: 796
+          conn_id: 466
+          command: Query
+            state: Waiting for table metadata lock
+current_statement: ALTER TABLE sakila.inventory FORCE
+             time: 0
+statement_latency: 89.88 ms
+      trx_latency: 43.30 us
+        trx_state: COMMITTED
+
+mysql> SELECT * FROM sys.innodb_lock_waits
+*************************** 1. row ***************************
+                wait_started: 2020-08-02 14:17:13
+                    wait_age: 00:00:02
+               wait_age_secs: 2
+                locked_table: `sakila`.`category`
+         locked_table_schema: sakila
+           locked_table_name: category
+      locked_table_partition: None
+   locked_table_subpartition: None
+                locked_index: PRIMARY
+                 locked_type: RECORD
+              waiting_trx_id: 535860
+         waiting_trx_started: 2020-08-02 14:17:13
+             waiting_trx_age: 00:00:02
+     waiting_trx_rows_locked: 1
+   waiting_trx_rows_modified: 0
+                 waiting_pid: 463
+               waiting_query: UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+             waiting_lock_id: 2711671600928:1795:4:282:2711634698920
+           waiting_lock_mode: X,REC_NOT_GAP
+             blocking_trx_id: 535859
+                blocking_pid: 462
+              blocking_query: None
+            blocking_lock_id: 2711671600096:1795:4:282:2711634694976
+          blocking_lock_mode: S,REC_NOT_GAP
+        blocking_trx_started: 2020-08-02 14:17:13
+            blocking_trx_age: 00:00:02
+    blocking_trx_rows_locked: 5
+  blocking_trx_rows_modified: 2
+     sql_kill_blocking_query: KILL QUERY 462
+sql_kill_blocking_connection: KILL 462
+1 row in set (0.0017 sec)
+
+mysql> UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> ALTER TABLE sakila.inventory FORCE
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> ALTER TABLE sakila.inventory FORCE
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> UPDATE sakila.category SET name = IF(name = 'Travel', 'Exploring', 'Travel') WHERE category_id = 16
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+mysql> ALTER TABLE sakila.inventory FORCE
+ERROR: 1205: Lock wait timeout exceeded; try restarting transaction
+
+
+-- Metrics reported by count collected during the test:
+NOW(),innodb_row_lock_current_waits,lock_row_lock_current_waits
+2020-08-02 14:17:11.168000,0,0
+2020-08-02 14:17:12.168000,0,0
+2020-08-02 14:17:13.180000,0,0
+2020-08-02 14:17:14.168000,1,1
+2020-08-02 14:17:15.177000,1,1
+2020-08-02 14:17:16.168000,1,1
+2020-08-02 14:17:17.169000,1,1
+2020-08-02 14:17:18.180000,0,0
+2020-08-02 14:17:19.180000,0,0
+2020-08-02 14:17:20.168000,0,0
+2020-08-02 14:17:21.180000,0,0
+2020-08-02 14:17:22.168000,1,1
+2020-08-02 14:17:23.179000,1,1
+2020-08-02 14:17:24.180000,1,1
+2020-08-02 14:17:25.179000,1,1
+2020-08-02 14:17:26.182000,0,0
+2020-08-02 14:17:27.180000,0,0
+2020-08-02 14:17:28.168000,0,0
+2020-08-02 14:17:29.180000,0,0
+2020-08-02 14:17:30.168000,1,1
+
+-- Metrics reported by rate collected during the test:
+time,innodb_row_lock_time,innodb_row_lock_waits,lock_deadlocks,lock_timeouts
+2020-08-02 14:17:12.168000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:13.180000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:14.168000,0.0,1.0121457489878543,0.0,0.0
+2020-08-02 14:17:15.177000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:16.168000,2019.1725529767912,1.0090817356205852,0.0,1.0090817356205852
+2020-08-02 14:17:17.169000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:18.180000,1541.0484668644908,0.0,0.0,0.9891196834817014
+2020-08-02 14:17:19.180000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:20.168000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:21.180000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:22.168000,82.99595141700405,2.0242914979757085,0.0,0.0
+2020-08-02 14:17:23.179000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:24.180000,1997.0029970029973,0.9990009990009991,0.0,0.9990009990009991
+2020-08-02 14:17:25.179000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:26.182000,2115.6530408773683,0.9970089730807579,0.0,0.9970089730807579
+2020-08-02 14:17:27.180000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:28.168000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:29.180000,0.0,0.0,0.0,0.0
+2020-08-02 14:17:30.168000,66.80161943319838,2.0242914979757085,0.0,0.0
+
+mysql> SELECT error_number, error_name, sum_error_raised
+         FROM performance_schema.events_errors_summary_global_by_error
+        WHERE error_name IN ('ER_LOCK_WAIT_TIMEOUT', 'ER_LOCK_DEADLOCK')
++--------------+----------------------+------------------+
+| error_number | error_name           | sum_error_raised |
++--------------+----------------------+------------------+
+|         1205 | ER_LOCK_WAIT_TIMEOUT |              317 |
+|         1213 | ER_LOCK_DEADLOCK     |               12 |
++--------------+----------------------+------------------+
+
+mysql> SELECT event_name, count_star, sum_errors
+         FROM performance_schema.events_statements_summary_global_by_event_name
+        WHERE event_name IN ('statement/sql/alter_table',
+                             'statement/sql/update')
++---------------------------+------------+------------+
+| event_name                | count_star | sum_errors |
++---------------------------+------------+------------+
+| statement/sql/alter_table |        116 |        104 |
+| statement/sql/update      |       4562 |        192 |
++---------------------------+------------+------------+
+
+mysql> SELECT Variable_name, Variable_value
+         FROM sys.metrics
+        WHERE Variable_name IN (
+                 'innodb_row_lock_current_waits',
+                 'lock_row_lock_current_waits',
+                 'innodb_row_lock_time',
+                 'innodb_row_lock_waits',
+                 'lock_deadlocks',
+                 'lock_timeouts'
+              )
++-------------------------------+----------------+
+| Variable_name                 | Variable_value |
++-------------------------------+----------------+
+| innodb_row_lock_current_waits | 1              |
+| innodb_row_lock_time          | 417383         |
+| innodb_row_lock_waits         | 392            |
+| lock_deadlocks                | 0              |
+| lock_row_lock_current_waits   | 1              |
+| lock_timeouts                 | 192            |
++-------------------------------+----------------+
+
+2020-08-02 14:17:30.664018  0 [INFO] Stopping the threads.
+
+2020-08-02 14:17:33.818122  0 [INFO] Completing the workload Listing 17-1
+2020-08-02 14:17:33.820075  0 [INFO] Disconnecting for the workload Listing 17-1
+2020-08-02 14:17:33.820075  0 [INFO] Completed the workload Listing 17-1

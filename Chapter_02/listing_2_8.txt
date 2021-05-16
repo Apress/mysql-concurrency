@@ -1,0 +1,351 @@
+mysql> SET GLOBAL innodb_status_output_locks = ON;
+Query OK, 0 rows affected (0.0005 sec)
+
+mysql> SHOW ENGINE INNODB STATUS\G
+*************************** 1. row ***************************
+  Type: InnoDB
+  Name:
+Status:
+=====================================
+2020-06-27 12:54:29 0x7f00 INNODB MONITOR OUTPUT
+=====================================
+Per second averages calculated from the last 50 seconds
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 2532 srv_active, 0 srv_shutdown, 1224 srv_idle
+srv_master_thread log flush and writes: 0
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 7750
+OS WAIT ARRAY INFO: signal count 6744
+RW-shared spins 3033, rounds 5292, OS waits 2261
+RW-excl spins 1600, rounds 25565, OS waits 1082
+RW-sx spins 2167, rounds 61634, OS waits 1874
+Spin rounds per wait: 1.74 RW-shared, 15.98 RW-excl, 28.44 RW-sx
+------------------------
+LATEST DETECTED DEADLOCK
+------------------------
+2020-06-27 12:54:26 0x862c
+*** (1) TRANSACTION:
+TRANSACTION 296726, ACTIVE 0 sec starting index read
+mysql tables in use 1, locked 1
+LOCK WAIT 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+MySQL thread id 20, OS thread handle 29332, query id 56150 localhost ::1 root updating
+UPDATE world.city
+   SET Population = Population + 1
+ WHERE ID = 130
+
+*** (1) HOLDS THE LOCK(S):
+RECORD LOCKS space id 259 page no 34 n bits 248 index PRIMARY of table `world`.`city` trx id 296726 lock_mode X locks rec but not gap
+Record lock, heap no 66 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000edd; asc     ;;
+ 1: len 6; hex 000000048716; asc       ;;
+ 2: len 7; hex 020000015f2949; asc     _)I;;
+ 3: len 30; hex 53616e204672616e636973636f2020202020202020202020202020202020; asc San Francisco                 ; (total 35 bytes);
+ 4: len 3; hex 555341; asc USA;;
+ 5: len 20; hex 43616c69666f726e696120202020202020202020; asc California          ;;
+ 6: len 4; hex 800bda1e; asc     ;;
+
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 259 page no 7 n bits 248 index PRIMARY of table `world`.`city` trx id 296726 lock_mode X locks rec but not gap waiting
+Record lock, heap no 44 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000082; asc     ;;
+ 1: len 6; hex 000000048715; asc       ;;
+ 2: len 7; hex 01000000d81fcd; asc        ;;
+ 3: len 30; hex 5379646e6579202020202020202020202020202020202020202020202020; asc Sydney                        ; (total 35 bytes);
+ 4: len 3; hex 415553; asc AUS;;
+ 5: len 20; hex 4e657720536f7574682057616c65732020202020; asc New South Wales     ;;
+ 6: len 4; hex 8031fdb0; asc  1  ;;
+
+
+*** (2) TRANSACTION:
+TRANSACTION 296725, ACTIVE 0 sec starting index read
+mysql tables in use 1, locked 1
+LOCK WAIT 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+MySQL thread id 19, OS thread handle 6576, query id 56151 localhost ::1 root updating
+UPDATE world.city
+   SET Population = Population + 1
+ WHERE ID = 3805
+
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 259 page no 7 n bits 248 index PRIMARY of table `world`.`city` trx id 296725 lock_mode X locks rec but not gap
+Record lock, heap no 44 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000082; asc     ;;
+ 1: len 6; hex 000000048715; asc       ;;
+ 2: len 7; hex 01000000d81fcd; asc        ;;
+ 3: len 30; hex 5379646e6579202020202020202020202020202020202020202020202020; asc Sydney                        ; (total 35 bytes);
+ 4: len 3; hex 415553; asc AUS;;
+ 5: len 20; hex 4e657720536f7574682057616c65732020202020; asc New South Wales     ;;
+ 6: len 4; hex 8031fdb0; asc  1  ;;
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 259 page no 34 n bits 248 index PRIMARY of table `world`.`city` trx id 296725 lock_mode X locks rec but not gap waiting
+Record lock, heap no 66 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000edd; asc     ;;
+ 1: len 6; hex 000000048716; asc       ;;
+ 2: len 7; hex 020000015f2949; asc     _)I;;
+ 3: len 30; hex 53616e204672616e636973636f2020202020202020202020202020202020; asc San Francisco                 ; (total 35 bytes);
+ 4: len 3; hex 555341; asc USA;;
+ 5: len 20; hex 43616c69666f726e696120202020202020202020; asc California          ;;
+ 6: len 4; hex 800bda1e; asc     ;;
+
+*** WE ROLL BACK TRANSACTION (2)
+------------
+TRANSACTIONS
+------------
+Trx id counter 296728
+Purge done for trx's n:o < 296728 undo n:o < 0 state: running but idle
+History list length 1
+LIST OF TRANSACTIONS FOR EACH SESSION:
+---TRANSACTION 283598406541472, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283598406540640, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283598406539808, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283598406538976, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 296726, ACTIVE 3 sec
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 2
+MySQL thread id 20, OS thread handle 29332, query id 56150 localhost ::1 root
+TABLE LOCK table `world`.`city` trx id 296726 lock mode IX
+RECORD LOCKS space id 259 page no 34 n bits 248 index PRIMARY of table `world`.`city` trx id 296726 lock_mode X locks rec but not gap
+Record lock, heap no 66 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000edd; asc     ;;
+ 1: len 6; hex 000000048716; asc       ;;
+ 2: len 7; hex 020000015f2949; asc     _)I;;
+ 3: len 30; hex 53616e204672616e636973636f2020202020202020202020202020202020; asc San Francisco                 ; (total 35 bytes);
+ 4: len 3; hex 555341; asc USA;;
+ 5: len 20; hex 43616c69666f726e696120202020202020202020; asc California          ;;
+ 6: len 4; hex 800bda1e; asc     ;;
+
+RECORD LOCKS space id 259 page no 7 n bits 248 index PRIMARY of table `world`.`city` trx id 296726 lock_mode X locks rec but not gap
+Record lock, heap no 44 PHYSICAL RECORD: n_fields 7; compact format; info bits 0
+ 0: len 4; hex 80000082; asc     ;;
+ 1: len 6; hex 000000048716; asc       ;;
+ 2: len 7; hex 020000015f296c; asc     _)l;;
+ 3: len 30; hex 5379646e6579202020202020202020202020202020202020202020202020; asc Sydney                        ; (total 35 bytes);
+ 4: len 3; hex 415553; asc AUS;;
+ 5: len 20; hex 4e657720536f7574682057616c65732020202020; asc New South Wales     ;;
+ 6: len 4; hex 8031fdb0; asc  1  ;;
+
+--------
+FILE I/O
+--------
+I/O thread 0 state: wait Windows aio (insert buffer thread)
+I/O thread 1 state: wait Windows aio (log thread)
+I/O thread 2 state: wait Windows aio (read thread)
+I/O thread 3 state: wait Windows aio (read thread)
+I/O thread 4 state: wait Windows aio (read thread)
+I/O thread 5 state: wait Windows aio (read thread)
+I/O thread 6 state: wait Windows aio (write thread)
+I/O thread 7 state: wait Windows aio (write thread)
+I/O thread 8 state: wait Windows aio (write thread)
+I/O thread 9 state: wait Windows aio (write thread)
+Pending normal aio reads: [0, 0, 0, 0] , aio writes: [0, 0, 0, 0] ,
+ ibuf aio reads:, log i/o's:, sync i/o's:
+Pending flushes (fsync) log: 0; buffer pool: 14
+39591 OS file reads, 229606 OS file writes, 43780 OS fsyncs
+0.00 reads/s, 0 avg bytes/read, 0.30 writes/s, 0.16 fsyncs/s
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 0, seg size 2, 6426 merges
+merged operations:
+ insert 1272, delete mark 5171, delete 4
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 553253, node heap has 944 buffer(s)
+Hash table size 553253, node heap has 0 buffer(s)
+Hash table size 553253, node heap has 0 buffer(s)
+Hash table size 553253, node heap has 0 buffer(s)
+Hash table size 553253, node heap has 0 buffer(s)
+Hash table size 553253, node heap has 0 buffer(s)
+Hash table size 553253, node heap has 1 buffer(s)
+Hash table size 553253, node heap has 4 buffer(s)
+0.00 hash searches/s, 0.18 non-hash searches/s
+---
+LOG
+---
+Log sequence number          1910063545
+Log buffer assigned up to    1910063545
+Log buffer completed up to   1910063545
+Log written up to            1910063545
+Log flushed up to            1910063545
+Added dirty pages up to      1910063545
+Pages flushed up to          1910063545
+Last checkpoint at           1910063545
+120548 log i/o's done, 0.10 log i/o's/second
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 2197815296
+Dictionary memory allocated 409088
+Buffer pool size   131072
+Free buffers       86134
+Database pages     43989
+Old database pages 16391
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 2712, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 39564, created 4425, written 80463
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 43989, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+----------------------
+INDIVIDUAL BUFFER POOL INFO
+----------------------
+---BUFFER POOL 0
+Buffer pool size   16384
+Free buffers       10968
+Database pages     5296
+Old database pages 1974
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 291, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4678, created 618, written 9709
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5296, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 1
+Buffer pool size   16384
+Free buffers       10690
+Database pages     5574
+Old database pages 2077
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 377, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 5067, created 507, written 10235
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5574, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 2
+Buffer pool size   16384
+Free buffers       10620
+Database pages     5645
+Old database pages 2103
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 332, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4917, created 728, written 11162
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5645, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 3
+Buffer pool size   16384
+Free buffers       10820
+Database pages     5445
+Old database pages 2029
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 355, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4965, created 480, written 8689
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5445, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 4
+Buffer pool size   16384
+Free buffers       10853
+Database pages     5412
+Old database pages 2016
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 396, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4971, created 441, written 9979
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5412, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 5
+Buffer pool size   16384
+Free buffers       11025
+Database pages     5242
+Old database pages 1954
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 330, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4693, created 549, written 9609
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5242, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 6
+Buffer pool size   16384
+Free buffers       10722
+Database pages     5544
+Old database pages 2066
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 251, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 4947, created 597, written 9224
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5544, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+---BUFFER POOL 7
+Buffer pool size   16384
+Free buffers       10436
+Database pages     5831
+Old database pages 2172
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 380, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 5326, created 505, written 11856
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 5831, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+--------------
+ROW OPERATIONS
+--------------
+0 queries inside InnoDB, 0 queries in queue
+0 read views open inside InnoDB
+Process ID=33936, Main thread ID=0000000000000B20 , state=sleeping
+Number of rows inserted 0, updated 16047, deleted 0, read 48017
+0.00 inserts/s, 0.06 updates/s, 0.00 deletes/s, 0.06 reads/s
+Number of system rows inserted 0, updated 315, deleted 0, read 5058
+0.00 inserts/s, 0.00 updates/s, 0.00 deletes/s, 0.08 reads/s
+----------------------------
+END OF INNODB MONITOR OUTPUT
+============================
+
+1 row in set (0.0013 sec)
+
+mysql> SET GLOBAL innodb_status_output_locks = OFF;
+Query OK, 0 rows affected (0.0004 sec)

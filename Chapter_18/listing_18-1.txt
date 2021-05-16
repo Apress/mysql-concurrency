@@ -1,0 +1,606 @@
+PS C:\Users\mysuer> D:\MySQL\Shell\8.0.21\bin\mysqlsh --user=root --py -e "concurrency_book.generate.run('Listing 18-1')";
+Password for connections: ****************
+2020-07-25 15:56:31.062768  0 [INFO] Starting the workload Listing 18-1
+
+*************************************
+*                                   *
+*   Listing 18-1. Semaphore Waits   *
+*                                   *
+*************************************
+
+
+Specify the number of read-write connections (0-31) [1]:
+Specify the number of read-only connections (1-31) [7]:
+Specify the number of seconds to run for (1-3600) [10]:
+Restart MySQL before executing the test? (Y|Yes|N|No) [No]:
+Delete the test specific indexes after executing the test? (Y|Yes|N|No) [Yes]:
+
+2020-07-25 15:56:33.928772  0 [INFO] Adding 1 index to the dept_emp table
+2020-07-25 15:56:43.238872  0 [INFO] Adding 1 index to the employees table
+2020-07-25 15:56:54.202735  0 [INFO] Adding 1 index to the salaries table
+2020-07-25 15:57:47.050114  0 [INFO] Warming up the InnoDB buffer pool.
+2020-07-25 15:58:04.543354  0 [INFO] Waiting 2 seconds to let the monitoring collect some information before starting the test.
+2020-07-25 15:58:06.544765  0 [INFO] Starting the work connections.
+2020-07-25 15:58:07.556126  0 [INFO] Completed  10%
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 25461
+--Thread 25492 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock (wait_ex) on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 0, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+OS WAIT ARRAY INFO: signal count 61016
+RW-shared spins 8114, rounds 15988, OS waits 7733
+RW-excl spins 10462, rounds 459174, OS waits 17502
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 1.97 RW-shared, 43.89 RW-excl, 28.38 RW-sx
+...
+
+2020-07-25 15:58:08.556562  0 [INFO] Completed  20%
+2020-07-25 15:58:09.554033  0 [INFO] Completed  30%
+2020-07-25 15:58:10.549551  0 [INFO] Completed  40%
+2020-07-25 15:58:11.549010  0 [INFO] Completed  50%
+2020-07-25 15:58:12.546644  0 [INFO] Completed  60%
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 25835
+--Thread 32236 has waited at btr0sea.cc line 1101 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 25132 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 25492 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 35592 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 22512 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+OS WAIT ARRAY INFO: signal count 65753
+RW-shared spins 8527, rounds 16461, OS waits 7793
+RW-excl spins 10749, rounds 462956, OS waits 17797
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 1.93 RW-shared, 43.07 RW-excl, 28.38 RW-sx
+...
+
+2020-07-25 15:58:13.547565  0 [INFO] Completed  70%
+2020-07-25 15:58:14.546988  0 [INFO] Completed  80%
+2020-07-25 15:58:15.546411  0 [INFO] Completed  90%
+2020-07-25 15:58:16.546807  0 [INFO] Completed 100%
+2020-07-25 15:58:16.546807  0 [INFO] Waiting for the connections to complete the current iteration.
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 28700
+--Thread 22512 has waited at btr0sea.ic line 122 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 10152 has waited at btr0sea.cc line 1197 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 32236 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 25492 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 22184 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 25132 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 35592 has waited at btr0sea.ic line 122 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 27836) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+OS WAIT ARRAY INFO: signal count 66607
+RW-shared spins 8901, rounds 17834, OS waits 8776
+RW-excl spins 11359, rounds 518867, OS waits 19665
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 2.00 RW-shared, 45.68 RW-excl, 28.38 RW-sx
+...
+
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 31940
+--Thread 35592 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 25132 has waited at btr0sea.cc line 1101 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 25492 has waited at btr0sea.cc line 1197 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 27836 has waited at btr0sea.cc line 1197 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 22184 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 32236 has waited at btr0sea.cc line 1101 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22512) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.cc line 1101
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+OS WAIT ARRAY INFO: signal count 67363
+RW-shared spins 9291, rounds 19261, OS waits 9790
+RW-excl spins 12094, rounds 585879, OS waits 21893
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 2.07 RW-shared, 48.44 RW-excl, 28.38 RW-sx
+...
+
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 36040
+--Thread 35592 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 27836 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 25132 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 22512 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 22184 has waited at btr0sea.ic line 122 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+--Thread 32236 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 25492) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\include\btr0sea.ic line 92
+OS WAIT ARRAY INFO: signal count 68351
+RW-shared spins 9768, rounds 21093, OS waits 11109
+RW-excl spins 13012, rounds 669111, OS waits 24669
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 2.16 RW-shared, 51.42 RW-excl, 28.38 RW-sx
+...
+
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 38644
+--Thread 25492 has waited at btr0sea.cc line 1197 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 35592 has waited at btr0sea.cc line 1101 for 0 seconds the semaphore:
+S-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+--Thread 27836 has waited at btr0sea.ic line 92 for 0 seconds the semaphore:
+X-lock on RW-latch at 000001BD277CCFF8 created in file btr0sea.cc line 202
+a writer (thread id 22184) has reserved it in mode exclusive
+number of readers 0, waiters flag 1, lock_word: 0
+Last time read locked in file btr0sea.ic line 122
+Last time write locked in file G:\ade\build\sb_0-39697839-1592332179.68\mysql-8.0.21\storage\innobase\btr\btr0sea.cc line 1197
+OS WAIT ARRAY INFO: signal count 69334
+RW-shared spins 10198, rounds 22337, OS waits 11909
+RW-excl spins 13840, rounds 723601, OS waits 26482
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 2.19 RW-shared, 52.28 RW-excl, 28.38 RW-sx
+...
+
+2020-07-25 15:58:32.231303  0 [INFO] Waiting 2 seconds to let the monitoring collect some information after completing the test.
+
+-- rwlock metrics collected during the test:
+time,innodb_rwlock_s_spin_waits,innodb_rwlock_s_spin_rounds,innodb_rwlock_s_os_waits,innodb_rwlock_x_spin_waits,innodb_rwlock_x_spin_rounds,innodb_rwlock_x_os_waits
+2020-07-25 15:58:05.593000,0.0,0.0,0.0,0.0,0.0,0.0
+2020-07-25 15:58:06.591000,1.002004008016032,1.002004008016032,0.0,2.004008016032064,4.008016032064128,0.0
+2020-07-25 15:58:07.600000,76.31318136769079,76.31318136769079,0.0,195.2428146679881,658.0773042616453,25.768087215064423
+2020-07-25 15:58:08.602000,53.89221556886228,53.89221556886228,0.0,26.94610778443114,430.13972055888223,104.79041916167665
+2020-07-25 15:58:09.604000,98.80239520958084,99.8003992015968,0.998003992015968,66.86626746506985,234.5309381237525,27.944111776447105
+2020-07-25 15:58:10.591000,75.98784194528875,75.98784194528875,0.0,41.540020263424516,120.56737588652483,27.35562310030395
+2020-07-25 15:58:11.599000,92.26190476190476,92.26190476190476,0.0,29.761904761904763,114.08730158730158,27.77777777777778
+2020-07-25 15:58:12.589000,92.92929292929293,147.4747474747475,55.55555555555556,121.21212121212122,2670.7070707070707,102.02020202020202
+2020-07-25 15:58:13.590000,94.90509490509491,328.6713286713287,228.7712287712288,139.86013986013987,12469.530469530471,414.58541458541464
+2020-07-25 15:58:14.591000,88.91108891108892,311.6883116883117,217.7822177822178,144.85514485514486,11317.682317682318,384.61538461538464
+2020-07-25 15:58:15.602000,90.00989119683483,347.18100890207717,254.20375865479727,153.3135509396637,15514.342235410486,516.3204747774481
+2020-07-25 15:58:16.598000,99.39759036144578,376.50602409638554,275.1004016064257,168.67469879518072,16209.839357429719,539.156626506024
+2020-07-25 15:58:17.591000,104.73313192346426,374.6223564954683,265.8610271903323,187.31117824773415,18018.126888217525,599.1943605236656
+2020-07-25 15:58:18.603000,96.83794466403162,348.8142292490119,246.04743083003953,176.87747035573122,15763.833992094862,524.703557312253
+2020-07-25 15:58:19.592000,91.0010111223458,337.71486349848334,240.64711830131446,187.0576339737108,18325.581395348836,609.7067745197169
+2020-07-25 15:58:20.595000,95.71286141575276,365.90229312063815,262.2133599202393,185.44366899302096,15386.839481555337,510.468594217348
+2020-07-25 15:58:21.590000,92.46231155778895,388.94472361809045,284.4221105527638,188.94472361809045,17241.206030150755,573.8693467336683
+2020-07-25 15:58:22.596000,96.42147117296223,350.89463220675947,251.4910536779324,177.9324055666004,15150.099403578528,502.9821073558648
+2020-07-25 15:58:23.595000,95.09509509509509,373.3733733733734,273.2732732732733,197.1971971971972,18681.681681681683,621.6216216216217
+2020-07-25 15:58:24.594000,97.09709709709709,355.35535535535536,251.25125125125126,170.17017017017017,14642.642642642642,494.4944944944945
+2020-07-25 15:58:25.599000,97.51243781094529,366.16915422885575,261.69154228855723,182.089552238806,17367.16417910448,578.1094527363184
+2020-07-25 15:58:26.606000,94.33962264150945,340.61569016881833,237.33862959285008,176.76266137040716,14917.576961271105,498.5104270109236
+2020-07-25 15:58:27.603000,88.26479438314945,253.76128385155465,161.48445336008024,193.58074222668003,13747.241725175527,456.3691073219659
+2020-07-25 15:58:28.603000,88.0,277.0,186.0,152.0,9562.0,318.0
+2020-07-25 15:58:29.592000,78.8675429726997,193.12436804853388,114.25682507583417,182.0020222446916,10168.857431749242,337.71486349848334
+2020-07-25 15:58:30.605000,80.9476801579467,186.5745310957552,104.63968410661403,126.35735439289242,6242.843040473841,207.3050345508391
+2020-07-25 15:58:31.602000,86.25877632898695,154.46339017051153,67.20160481444333,257.77331995987964,3430.2908726178534,103.3099297893681
+2020-07-25 15:58:32.590000,32.388663967611336,62.75303643724696,30.36437246963563,12.145748987854251,281.37651821862346,9.10931174089069
+2020-07-25 15:58:33.593000,0.0,0.0,0.0,0.0,0.0,0.0
+
+-- Adaptive hash index metrics collected during the test:
+time,adaptive_hash_searches,adaptive_hash_searches_btree
+2020-07-25 15:58:05.593000,0.0,0.0
+2020-07-25 15:58:06.591000,39936.87374749499,88.17635270541082
+2020-07-25 15:58:07.600000,889901.8830525273,31449.950445986127
+2020-07-25 15:58:08.602000,605940.1197604791,91908.18363273454
+2020-07-25 15:58:09.604000,862961.0778443114,34343.31337325349
+2020-07-25 15:58:10.591000,809564.336372847,32198.58156028369
+2020-07-25 15:58:11.599000,865339.2857142857,29181.54761904762
+2020-07-25 15:58:12.589000,428141.41414141416,285636.36363636365
+2020-07-25 15:58:13.590000,1579.4205794205795,162342.65734265736
+2020-07-25 15:58:14.591000,19686.31368631369,238439.56043956048
+2020-07-25 15:58:15.602000,230.46488625123644,141938.67457962414
+2020-07-25 15:58:16.598000,205.82329317269077,123806.2248995984
+2020-07-25 15:58:17.591000,30.211480362537763,7305.135951661631
+2020-07-25 15:58:18.603000,186.7588932806324,121422.92490118578
+2020-07-25 15:58:19.592000,19.211324570273003,5855.409504550051
+2020-07-25 15:58:20.595000,166.50049850448656,87706.87936191427
+2020-07-25 15:58:21.590000,27.1356783919598,4220.100502512563
+2020-07-25 15:58:22.596000,186.87872763419483,119930.41749502982
+2020-07-25 15:58:23.595000,34.034034034034036,4140.14014014014
+2020-07-25 15:58:24.594000,239.23923923923923,118935.93593593594
+2020-07-25 15:58:25.599000,87.56218905472637,38116.417910447766
+2020-07-25 15:58:26.606000,54.617676266137046,49174.776564051645
+2020-07-25 15:58:27.603000,63.18956870611836,33545.636910732195
+2020-07-25 15:58:28.603000,146.0,50494.0
+2020-07-25 15:58:29.592000,187.0576339737108,45497.47219413549
+2020-07-25 15:58:30.605000,871.6683119447188,87191.51036525174
+2020-07-25 15:58:31.602000,63418.25476429288,96783.35005015045
+2020-07-25 15:58:32.590000,20215.58704453441,24827.935222672066
+2020-07-25 15:58:33.593000,0.0,0.0
+
+-- Pages made or not made young:
+Made young ......:   4077 pages (  137.52 pages/s)
+Not made young ..:      0 pages (    0.00 pages/s)
+
+mysql> SHOW ENGINE INNODB STATUS\G
+...
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 13, seg size 15, 0 merges
+merged operations:
+ insert 0, delete mark 0, delete 0
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 3880 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+0.00 hash searches/s, 0.00 non-hash searches/s
+...
+
+-- Total mutex and rw-semaphore waits during test:
++----------------+-------+
+| File:Line      | Waits |
++----------------+-------+
+| btr0sea.cc:202 | 13368 |
++----------------+-------+
+
+-- Total execution time: 25.685603 seconds
+
+2020-07-25 15:58:34.374196  0 [INFO] Dropping indexes on the dept_emp table.
+2020-07-25 15:58:35.651209  0 [INFO] Dropping indexes on the employees table.
+2020-07-25 15:58:36.344171  0 [INFO] Dropping indexes on the salaries table.
+
+Available investigations:
+=========================
+
+ # Query
+--------------------------------------------------
+ 1 SELECT variable_name, variable_value AS value, enabled
+     FROM sys.metrics
+    WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+    ORDER BY variable_name
+ 2 SHOW ENGINE INNODB MUTEX
+ 3 SHOW ENGINE INNODB STATUS
+
+Choose investigation (# - empty to exit): 1
+-- Connection 1
+Connection 1> SELECT variable_name, variable_value AS value, enabled
+                FROM sys.metrics
+               WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+               ORDER BY variable_name;
++------------------------------------------+----------+---------+
+| variable_name                            | value    | enabled |
++------------------------------------------+----------+---------+
+| adaptive_hash_pages_added                | 0        | NO      |
+| adaptive_hash_pages_removed              | 0        | NO      |
+| adaptive_hash_rows_added                 | 0        | NO      |
+| adaptive_hash_rows_deleted_no_hash_entry | 0        | NO      |
+| adaptive_hash_rows_removed               | 0        | NO      |
+| adaptive_hash_rows_updated               | 0        | NO      |
+| adaptive_hash_searches                   | 51488882 | YES     |
+| adaptive_hash_searches_btree             | 10904682 | YES     |
++------------------------------------------+----------+---------+
+8 rows in set (0.0097 sec)
+
+Available investigations:
+=========================
+
+ # Query
+--------------------------------------------------
+ 1 SELECT variable_name, variable_value AS value, enabled
+     FROM sys.metrics
+    WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+    ORDER BY variable_name
+ 2 SHOW ENGINE INNODB MUTEX
+ 3 SHOW ENGINE INNODB STATUS
+
+Choose investigation (# - empty to exit): 2
+
+Connection 1> SHOW ENGINE INNODB MUTEX;
++--------+----------------------------+-------------+
+| Type   | Name                       | Status      |
++--------+----------------------------+-------------+
+| InnoDB | rwlock: fil0fil.cc:3206    | waits=11    |
+| InnoDB | rwlock: dict0dict.cc:1035  | waits=12    |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=7730  |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=934   |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=5445  |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=889   |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=9076  |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=13608 |
+| InnoDB | rwlock: btr0sea.cc:202     | waits=1050  |
+| InnoDB | rwlock: hash0hash.cc:171   | waits=4     |
+| InnoDB | sum rwlock: buf0buf.cc:778 | waits=86    |
++--------+----------------------------+-------------+
+11 rows in set (0.0008 sec)
+
+Available investigations:
+=========================
+
+ # Query
+--------------------------------------------------
+ 1 SELECT variable_name, variable_value AS value, enabled
+     FROM sys.metrics
+    WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+    ORDER BY variable_name
+ 2 SHOW ENGINE INNODB MUTEX
+ 3 SHOW ENGINE INNODB STATUS
+
+Choose investigation (# - empty to exit): 3
+
+Connection 1> SHOW ENGINE INNODB STATUS\G
+*************************** 1. row ***************************
+  Type: InnoDB
+  Name:
+Status:
+=====================================
+2020-07-25 15:58:57 0x5ee4 INNODB MONITOR OUTPUT
+=====================================
+Per second averages calculated from the last 23 seconds
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 98 srv_active, 0 srv_shutdown, 4069 srv_idle
+srv_master_thread log flush and writes: 0
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 39090
+OS WAIT ARRAY INFO: signal count 70848
+RW-shared spins 10367, rounds 22656, OS waits 12058
+RW-excl spins 14304, rounds 733011, OS waits 26784
+RW-sx spins 16, rounds 454, OS waits 15
+Spin rounds per wait: 2.19 RW-shared, 51.25 RW-excl, 28.38 RW-sx
+------------
+TRANSACTIONS
+------------
+Trx id counter 459889
+Purge done for trx's n:o < 459888 undo n:o < 0 state: running but idle
+History list length 12
+LIST OF TRANSACTIONS FOR EACH SESSION:
+---TRANSACTION 283386895027552, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283386895028384, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283386895026720, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+---TRANSACTION 283386895025888, not started
+0 lock struct(s), heap size 1136, 0 row lock(s)
+--------
+FILE I/O
+--------
+I/O thread 0 state: wait Windows aio (insert buffer thread)
+I/O thread 1 state: wait Windows aio (log thread)
+I/O thread 2 state: wait Windows aio (read thread)
+I/O thread 3 state: wait Windows aio (read thread)
+I/O thread 4 state: wait Windows aio (read thread)
+I/O thread 5 state: wait Windows aio (read thread)
+I/O thread 6 state: wait Windows aio (write thread)
+I/O thread 7 state: wait Windows aio (write thread)
+I/O thread 8 state: wait Windows aio (write thread)
+I/O thread 9 state: wait Windows aio (write thread)
+Pending normal aio reads: [0, 0, 0, 0] , aio writes: [0, 0, 0, 0] ,
+ ibuf aio reads:, log i/o's:, sync i/o's:
+Pending flushes (fsync) log: 0; buffer pool: 0
+76934 OS file reads, 49444 OS file writes, 12692 OS fsyncs
+5.04 reads/s, 16384 avg bytes/read, 15.83 writes/s, 5.61 fsyncs/s
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 13, seg size 15, 0 merges
+merged operations:
+ insert 0, delete mark 0, delete 0
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+Hash table size 34679, node heap has 1 buffer(s)
+3.26 hash searches/s, 68.13 non-hash searches/s
+---
+LOG
+---
+Log sequence number          5715122681
+Log buffer assigned up to    5715122681
+Log buffer completed up to   5715122681
+Log written up to            5715122681
+Log flushed up to            5715122681
+Added dirty pages up to      5715122681
+Pages flushed up to          5715122681
+Last checkpoint at           5715122681
+7663 log i/o's done, 7.22 log i/o's/second
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 137363456
+Dictionary memory allocated 460605
+Buffer pool size   8192
+Free buffers       4532
+Database pages     3652
+Old database pages 1328
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 113069, not young 18035
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 74912, created 25060, written 28333
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+Buffer pool hit rate 992 / 1000, young-making rate 5 / 1000 not 193 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 3652, unzip_LRU len: 0
+I/O sum[1778]:cur[0], unzip sum[0]:cur[0]
+--------------
+ROW OPERATIONS
+--------------
+0 queries inside InnoDB, 0 queries in queue
+0 read views open inside InnoDB
+Process ID=18328, Main thread ID=00000000000070E4 , state=sleeping
+Number of rows inserted 0, updated 0, deleted 0, read 148314671
+0.00 inserts/s, 0.00 updates/s, 0.00 deletes/s, 0.00 reads/s
+Number of system rows inserted 922, updated 1620, deleted 896, read 16504
+2.74 inserts/s, 4.30 updates/s, 3.17 deletes/s, 44.35 reads/s
+----------------------------
+END OF INNODB MONITOR OUTPUT
+============================
+
+1 row in set (0.0011 sec)
+
+Available investigations:
+=========================
+
+ # Query
+--------------------------------------------------
+ 1 SELECT variable_name, variable_value AS value, enabled
+     FROM sys.metrics
+    WHERE type = 'InnoDB Metrics - adaptive_hash_index'
+    ORDER BY variable_name
+ 2 SHOW ENGINE INNODB MUTEX
+ 3 SHOW ENGINE INNODB STATUS
+
+Choose investigation (# - empty to exit):
+
+2020-07-25 15:58:58.795104  0 [INFO] Completing the workload Listing 18-1
+2020-07-25 15:58:58.795104  0 [INFO] Disconnecting for the workload Listing 18-1
+2020-07-25 15:58:58.795104  0 [INFO] Completed the workload Listing 18-1
