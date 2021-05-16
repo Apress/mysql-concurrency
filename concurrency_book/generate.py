@@ -1,6 +1,7 @@
 import threading
 import queue
 import pathlib
+import sys
 from importlib import import_module
 
 import mysqlsh
@@ -239,6 +240,18 @@ def load(schema_name=None):
     # An existing connection is required to load a schema
     has_connection = libs.util.verify_session()
     if not has_connection:
+        return None
+
+    # Loading a schema requires changing the default schema.
+    # This is currently only supported using the set_current_schema()
+    # method which is not available for classic protocol. So verify
+    # the method is available before proceeding.
+    try:
+        getattr(mysqlsh.globals.session, 'set_current_schema')
+    except AttributeError:
+        print('Loading data requires the session.set_current_schema() which. ' +
+              'is only available with the mysqlx protocol. Please exit MySQL ' +
+              'Shell and reconnect using the --mysqlx option.', file=sys.stderr)
         return None
 
     schema = None
