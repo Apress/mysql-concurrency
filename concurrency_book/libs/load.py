@@ -29,7 +29,7 @@ KNOWN_SCHEMAS = {
 URLS = {
     'employees': 'https://github.com/datacharmer/test_db/archive/master.zip',
     'sakila': 'https://downloads.mysql.com/docs/sakila-db.zip',
-    'world': 'https://downloads.mysql.com/docs/world.sql.zip',
+    'world': 'https://downloads.mysql.com/docs/world-db.zip',
 }
 URLS['employees partitioned'] = URLS['employees']
 
