@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    volumes:
+      - ./docker/db/mysql/varlibmysql:/var/lib/mysql
+      - ./docker/db/mysql/varrunmysqld:/var/run/mysqld
+      - ./docker/db/mysql/.mysqlsh:/root/.mysqlsh
+    ports:
+      - 3306:3306
+    restart: unless-stopped
