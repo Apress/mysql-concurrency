@@ -29,7 +29,7 @@ KNOWN_SCHEMAS = {
 URLS = {
     'employees': 'https://github.com/datacharmer/test_db/archive/master.zip',
     'sakila': 'https://downloads.mysql.com/docs/sakila-db.zip',
-    'world': 'https://downloads.mysql.com/docs/world.sql.zip',
+    'world': 'https://downloads.mysql.com/docs/world-db.zip',
 }
 URLS['employees partitioned'] = URLS['employees']
 
@@ -210,7 +210,7 @@ class Load(object):
         file = self._download()
         with zipfile.ZipFile(file) as zip_fs:
             self._delimiter = ';'
-            with zip_fs.open('world.sql') as world:
+            with zip_fs.open('world-db/world.sql') as world:
                 self._sql_file(world, zip_fs)
 
         LOG.info('Load of the world schema completed')
