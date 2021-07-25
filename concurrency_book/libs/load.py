@@ -210,7 +210,7 @@ class Load(object):
         file = self._download()
         with zipfile.ZipFile(file) as zip_fs:
             self._delimiter = ';'
-            with zip_fs.open('world.sql') as world:
+            with zip_fs.open('world-db/world.sql') as world:
                 self._sql_file(world, zip_fs)
 
         LOG.info('Load of the world schema completed')
