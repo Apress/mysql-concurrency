@@ -13,7 +13,28 @@ Release v1.2 updates the URL for downloading the world database and the path wit
 
 Release v1.1 fixes the directory structure, adds missing files for chapters 2, 13, 15, 16, 17, 18, and adds error message when using `concurrency_book.generate.load()` with the classic MySQL protocol.
 
-Release v1.0 corresponds to the code in the published book, without corrections or updates.
+## Docker 
+
+This is optional but for the sake of studying it's better to use Docker instead 
+
+Start the container 
+```
+$ docker-compose up -d
+```
+
+copy the whole project to `./docker/db/mysql/.mysqlsh` directory with the name as `mysql-concurrency`.
+
+add `mysqlshrc.py` file inside `./docker/db/mysql/.mysqlsh` and copy this code 
+```mysqlshrc.py
+import sys
+sys.path.append('/root/.mysqlsh/mysql-concurrency')
+import concurrency_book.generate
+```
+
+Enter to MySQL Shell
+```
+$ docker-compose exec mysql mysqlsh -uroot
+```
 
 ## Contributions
 

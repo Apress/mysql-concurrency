@@ -1,0 +1,19 @@
+version: "3"
+services:
+  # run this command mannualy at the firs time
+  # $ docker-compose -f docker-compose-pxc.yml exec pxc bash
+  # $ mysql -u root -p
+  # mysql> SET GLOBAL pxc_strict_mode=PERMISSIVE;
+  pxc:
+    image: percona/percona-xtradb-cluster:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      CLUSTER_NAME: pxc-cluster
+    volumes:
+      - ./docker/db/pxc:/var/lib/mysql
+    ports:
+      - 3306:3306
+      - 4567:4567
+      - 4568:4568
+      - 4444:4444
+    restart: unless-stopped
