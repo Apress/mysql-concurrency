@@ -4,6 +4,7 @@ retrieved using the get_jobs() function."""
 
 import zipfile
 from urllib import request
+import ssl
 import re
 import platform
 import pathlib
@@ -89,7 +90,8 @@ class Load(object):
         if not path.is_file():
             LOG.info(f'Downloading {URLS[self._schema]} to {path}')
             with open(path, mode='xb') as fs:
-                with request.urlopen(URLS[self._schema]) as url:
+                context = ssl._create_unverified_context()
+                with request.urlopen(URLS[self._schema],context=context) as url:
                     data = url.read(8 * 1024)
                     LOG.debug(f'Downloaded data length: {len(data)} bytes')
                     while len(data) > 0:
